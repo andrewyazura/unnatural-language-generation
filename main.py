@@ -49,7 +49,9 @@ if __name__ == '__main__':
     t = read_text('text.txt')
 
     sentences = [
-        sent for paragraph in tokenize_uk.tokenize_text(t) for sent in paragraph
+        sent
+        for paragraph in tokenize_uk.tokenize_text(t)
+        for sent in paragraph
     ]
     graph = sentences_to_graph(sentences)
 
