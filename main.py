@@ -3,32 +3,29 @@ import re
 
 import networkx as nx
 import numpy as np
+import tokenize_uk
+
+flatten = lambda t: [item for sublist in t for item in sublist]
 
 
-def read_text(filename, separate_punctuation=True):
-    allowed = re.compile(r'[^А-ЯҐЄІЇа-яґєії.,!?’\- ]+')
-    punctuation = re.compile(r'([.,!?\-]+)')
-
+def read_text(filename):
     with open(filename, 'r') as f:
-        text = allowed.sub(r' ', f.read()).lower()
-        if separate_punctuation:
-            text = punctuation.sub(r' \1 ', text)
+        text = f.read().lower()
 
     return text
 
 
-def text_to_graph(text):
+def sentences_to_graph(sentences):
     graph = nx.DiGraph()
-    data = text.split()
-    data_len = len(data)
 
-    for index, word in enumerate(data):
-        if index + 1 == data_len:
-            continue
+    for sent in sentences:
+        for index, word in enumerate(sent):
+            if index + 1 == len(sent):
+                continue
 
-        w = graph.get_edge_data(word, data[index + 1], default={})
-        w = w.get('weight', 0)
-        graph.add_edge(word, data[index + 1], weight=w + 1)
+            w = graph.get_edge_data(word, sent[index + 1], default={})
+            w = w.get('weight', 0)
+            graph.add_edge(word, sent[index + 1], weight=w + 1)
 
     return graph
 
@@ -50,10 +47,14 @@ def random_sentence(graph, start_word, length):
 
 if __name__ == '__main__':
     t = read_text('text.txt')
-    g = text_to_graph(t)
 
-    r = random.randint(0, len(g.nodes))
-    w = t.split()[r]
+    sentences = [
+        sent for paragraph in tokenize_uk.tokenize_text(t) for sent in paragraph
+    ]
+    graph = sentences_to_graph(sentences)
 
-    s = random_sentence(g, w, 40)
-    print(s)
+    r = random.randint(0, len(graph.nodes))
+    word = flatten(sentences)[r]
+
+    generated_sentence = random_sentence(graph, word, 10)
+    print(generated_sentence)
