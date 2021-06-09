@@ -35,9 +35,13 @@ def random_sentence(graph, start_word, length):
 
     while length:
         adj = graph[word]
+        if not adj:
+            break
+
         weights = [adj[w]['weight'] for w in adj]
         weights = [w / sum(weights) for w in weights]
         word = np.random.choice(list(adj), 1, p=weights)[0]
+
         sentence += ' ' + word
         length -= 1
 
@@ -57,5 +61,5 @@ if __name__ == '__main__':
     r = random.randint(0, len(graph.nodes))
     word = flatten(sentences)[r]
 
-    generated_sentence = random_sentence(graph, word, 10)
+    generated_sentence = random_sentence(graph, word, 40)
     print(generated_sentence)
