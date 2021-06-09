@@ -1,5 +1,4 @@
 import random
-import re
 
 import networkx as nx
 import numpy as np
