@@ -1,5 +1,3 @@
-import random
-
 import networkx as nx
 import numpy as np
 import tokenize_uk
@@ -12,6 +10,14 @@ def read_text(filename):
         text = f.read().lower()
 
     return text
+
+
+def text_to_sentences(text):
+    return [
+        sent
+        for paragraph in tokenize_uk.tokenize_text(text)
+        for sent in paragraph
+    ]
 
 
 def sentences_to_graph(sentences):
@@ -39,7 +45,8 @@ def random_sentence(graph, start_word, length):
             break
 
         weights = [adj[w]['weight'] for w in adj]
-        weights = [w / sum(weights) for w in weights]
+        total_weights = sum(weights)
+        weights = [w / total_weights for w in weights]
         word = np.random.choice(list(adj), 1, p=weights)[0]
 
         sentence += ' ' + word
@@ -50,16 +57,10 @@ def random_sentence(graph, start_word, length):
 
 if __name__ == '__main__':
     t = read_text('text.txt')
+    sentences = text_to_sentences(t)
 
-    sentences = [
-        sent
-        for paragraph in tokenize_uk.tokenize_text(t)
-        for sent in paragraph
-    ]
     graph = sentences_to_graph(sentences)
-
-    r = random.randint(0, len(graph.nodes))
-    word = flatten(sentences)[r]
+    word = np.random.choice(graph.nodes)
 
     generated_sentence = random_sentence(graph, word, 40)
     print(generated_sentence)
