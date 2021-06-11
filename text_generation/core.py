@@ -2,15 +2,6 @@ import networkx as nx
 import numpy as np
 import tokenize_uk as tn
 
-flatten = lambda t: [item for sublist in t for item in sublist]
-
-
-def read_text(filename):
-    with open(filename, 'r') as f:
-        text = f.read().lower()
-
-    return text
-
 
 def text_to_sentences(text):
     return [sent for paragraph in tn.tokenize_text(text) for sent in paragraph]

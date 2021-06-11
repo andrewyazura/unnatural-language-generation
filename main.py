@@ -1,6 +1,6 @@
 import numpy as np
 
-from funcs import (
+from text_generation import (
     random_sentence,
     read_text,
     sentences_to_graph,
