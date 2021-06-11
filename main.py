@@ -20,8 +20,9 @@ def text_to_sentences(text):
     ]
 
 
-def sentences_to_graph(sentences):
-    graph = nx.DiGraph()
+def sentences_to_graph(sentences, graph=None):
+    if graph is None:
+        graph = nx.DiGraph()
 
     for sent in sentences:
         for index, word in enumerate(sent):
