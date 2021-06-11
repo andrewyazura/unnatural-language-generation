@@ -1,0 +1,6 @@
+logging:
+  filename: bot.log
+  level: WARNING
+
+telegram-bot:
+  token: your_token
