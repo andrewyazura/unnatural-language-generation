@@ -1,4 +1,6 @@
 start: 'Hello there!'
 help: 'Get some help'
+generate_help: '/generate <length>'
 received: 'Text received'
-processed: 'Text precessed'
+processed: 'Text processed'
+done: 'Done!'
