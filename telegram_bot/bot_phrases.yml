@@ -1,3 +1,4 @@
 start: 'Hello there!'
 help: 'Get some help'
-send_file: 'Send your file to me'
+received: 'Text received'
+processed: 'Text precessed'
