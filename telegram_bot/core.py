@@ -34,7 +34,7 @@ def generate_command(update, context):
     context.bot.send_chat_action(user_id, 'typing')
 
     try:
-        length = context.args[0]
+        length = int(context.args[0])
         graph = get_user_graph(user_id)
         word = np.random.choice(graph.nodes)
 
