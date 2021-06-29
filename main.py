@@ -2,12 +2,13 @@ import numpy as np
 
 from text_generation import (
     random_sentence,
-    read_text,
     sentences_to_graph,
     text_to_sentences,
 )
 
-t = read_text('text.txt')
+with open('text.txt', 'r') as f:
+    t = f.read().lower()
+
 sentences = text_to_sentences(t)
 
 graph = sentences_to_graph(sentences)
