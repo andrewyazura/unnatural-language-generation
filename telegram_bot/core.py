@@ -2,7 +2,7 @@ import logging
 
 import yaml
 from telegram.ext import CommandHandler, Filters, MessageHandler, Updater
-from text_generation import sentences_to_graph
+from text_generation import sentences_to_graph, text_to_sentences
 
 from .helpers import get_user_graph, update_user_graph
 
@@ -32,7 +32,7 @@ def handle_text(update, context):
     update_user_graph(
         user_id,
         sentences_to_graph(
-            update.message.text,
+            text_to_sentences(update.message.text),
             get_user_graph(user_id),
         ),
     )
