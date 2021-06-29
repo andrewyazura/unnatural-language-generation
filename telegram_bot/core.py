@@ -25,7 +25,7 @@ def help_command(update, context):
 
 
 def handle_text(update, context):
-    user_id = update.message.chat.id
+    user_id = update.message.chat_id
     update.message.reply_text(phrases['received'])
     context.bot.send_chat_action(user_id, 'typing')
 
