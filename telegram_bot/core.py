@@ -2,6 +2,7 @@ import logging
 
 import numpy as np
 import yaml
+from telegram import Update, ParseMode
 from telegram.ext import CommandHandler, Filters, MessageHandler, Updater
 from text_generation import (
     random_sentence,
@@ -22,11 +23,19 @@ logger = logging.getLogger(__name__)
 
 
 def start_command(update, context):
-    update.message.reply_text(phrases['start'])
+    update.message.reply_text(
+        phrases['start'],
+        parse_mode=ParseMode.MARKDOWN,
+        disable_web_page_preview=True,
+    )
 
 
 def help_command(update, context):
-    update.message.reply_text(phrases['help'])
+    update.message.reply_text(
+        phrases['help'],
+        parse_mode=ParseMode.MARKDOWN,
+        disable_web_page_preview=True,
+    )
 
 
 def generate_command(update, context):
@@ -54,7 +63,6 @@ def clear_command(update, context):
 
 def handle_text(update, context):
     user_id = update.message.chat_id
-    update.message.reply_text(phrases['received'])
     context.bot.send_chat_action(user_id, 'typing')
 
     update_user_graph(

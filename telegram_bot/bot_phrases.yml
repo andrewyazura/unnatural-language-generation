@@ -1,6 +1,22 @@
-start: 'Hello there!'
-help: 'Get some help'
-generate_help: '/generate <length>'
-received: 'Text received'
-processed: 'Text processed'
-done: 'Done!'
+start: |-
+  Вітаю! 
+  Я генерую неприродну мову.
+
+  Надішліть будь-який текст українською, щоб я проаналізував та записав його.
+ 
+  *Доступні команди:*
+  /generate <число> - згенерувати речення з заданою кількістю слів.
+  /clear - очистити записані тексти.
+  
+  Перейдіть за посиланням, щоб дізнатися більше: [Github](https://github.com/andrewyazura/unnatural-language-generation/blob/telegram-bot/README.md)
+help: |-
+  Надішліть будь-який текст українською, щоб я проаналізував та записав його.
+ 
+  *Доступні команди:*
+  /generate <число> - згенерувати речення з заданою кількістю слів.
+  /clear - очистити записані тексти.
+  
+  Перейдіть за посиланням, щоб дізнатися більше: [Github](https://github.com/andrewyazura/unnatural-language-generation/blob/telegram-bot/README.md)
+generate_help: 'Правильне використання: /generate <довжина речення>'
+processed: 'Успішно опрацьовано'
+done: 'Готово!'
