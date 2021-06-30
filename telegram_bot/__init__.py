@@ -1,4 +1,4 @@
-from .core import main
+from .core import run_bot
 from .helpers import (
     delete_all_graphs,
     delete_user_graph,

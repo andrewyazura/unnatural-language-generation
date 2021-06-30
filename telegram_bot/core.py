@@ -139,7 +139,7 @@ def error_handler(update, context):
     logging.error(context.error)
 
 
-def main():
+def run_bot():
     updater = Updater(**config['telegram-bot'])
     dispatcher = updater.dispatcher
 
