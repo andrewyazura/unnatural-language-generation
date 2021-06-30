@@ -104,8 +104,12 @@ def generate_command(update, context):
 
 
 def clear_command(update, context):
-    delete_user_graph(update.message.chat_id)
-    update.message.reply_text(phrases['done'])
+    try:
+        delete_user_graph(update.message.chat_id)
+        update.message.reply_text(phrases['done'])
+
+    except:
+        update.message.reply_text(phrases['no-graph'])
 
 
 @restricted
@@ -113,6 +117,7 @@ def clear_user_command(update, context):
     try:
         user_id = int(context.args[0])
         delete_user_graph(user_id)
+        update.message.reply_text(phrases['done'])
 
     except:
         update.message.reply_text(phrases['clear-user-help'])
@@ -121,6 +126,7 @@ def clear_user_command(update, context):
 @restricted
 def clear_all_command(update, context):
     delete_all_graphs()
+    update.message.reply_text(phrases['done'])
 
 
 def handle_text(update, context):
