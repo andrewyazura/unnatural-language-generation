@@ -82,7 +82,7 @@ Telegram бот [@unnatural_language_bot](https://t.me/unnatural_language_bot)
 
 Для зручного користування програмою існує telegram бот - [@unnatural_language_bot](https://t.me/unnatural_language_bot).
 Кожен користувач має свій граф і може додавати в нього нові слова, зв'язки чи очищати його.
-Щоб запустити бота у себе потрібно зареєструвати свого бота через [@botfather](https://t.me/botfather) та ввести власні дані у `telegram_bot/bot_config.yml` та запустити `main_bot.py`.
+Щоб запустити бота у себе потрібно зареєструвати свого бота через [@botfather](https://t.me/botfather), ввести власні дані у `telegram_bot/bot_config.yml` та запустити `main_bot.py`.
 
 ### Команди
 
@@ -98,7 +98,7 @@ Telegram бот [@unnatural_language_bot](https://t.me/unnatural_language_bot)
 
 1. Кількість слів (кількість нод у графі)
 2. Кількість зв'язків між словами (кількість ребер графу)
-3. Вага графу (сумма ваги кожного ребра графу)
+3. Вага графу (сумма ваг усіх ребер графу)
 
 ### Адмінські команди
 
