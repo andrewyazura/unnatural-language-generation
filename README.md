@@ -1,5 +1,8 @@
 # Unnatural language generation / Генератор неприродної мови
 
+![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/andrewyazura/unnatural-language-generation?include_prereleases&label=release&labelColor=181717&logo=github)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/andrewyazura/unnatural-language-generation/Lint?label=linter&labelColor=181717&logo=github)
+
 ## Що це?
 
 Це - примітивний генератор неприродної мови.
