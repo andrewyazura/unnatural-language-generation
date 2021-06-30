@@ -31,7 +31,7 @@ logger = logging.getLogger(__name__)
 
 def start_command(update, context):
     update.message.reply_text(
-        phrases['start'],
+        phrases['start'] + '\n\n' + phrases['help'],
         parse_mode=ParseMode.MARKDOWN,
         disable_web_page_preview=True,
     )
