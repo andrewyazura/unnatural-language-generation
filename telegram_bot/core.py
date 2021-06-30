@@ -99,6 +99,9 @@ def generate_command(update, context):
             parse_mode=ParseMode.MARKDOWN,
         )
 
+    except:
+        update.message.reply_text(phrases['no-graph'])
+
 
 def clear_command(update, context):
     delete_user_graph(update.message.chat_id)
