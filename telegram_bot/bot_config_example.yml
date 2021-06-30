@@ -1,5 +1,5 @@
 logging:
-  filename: bot.log
+  filename: 'tmp/bot.log'
   level: WARNING
 
 telegram-bot:
@@ -9,5 +9,5 @@ admin-ids:
   - telegram_id
   - another_id
   - one_more_id
-user-graphs-path: 'user_graphs/{}.json'
-user-texts-path: 'user_texts/{}.txt'
+user-graphs-path: 'tmp/user_graphs/{}.json'
+user-texts-path: 'tmp/user_texts/{}.txt'
