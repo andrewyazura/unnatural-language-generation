@@ -4,3 +4,5 @@ logging:
 
 telegram-bot:
   token: your_token
+
+user-graphs-path: user_graphs/
