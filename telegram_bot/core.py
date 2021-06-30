@@ -10,7 +10,14 @@ from text_generation import (
     text_to_sentences,
 )
 
-from .helpers import get_user_graph, update_user_graph, delete_user_graph
+from .helpers import (
+    delete_all_graphs,
+    delete_user_graph,
+    get_all_graphs,
+    get_user_graph,
+    restricted,
+    update_user_graph,
+)
 
 with open('telegram_bot/bot_config.yml', 'r') as stream:
     config = yaml.safe_load(stream)
@@ -54,7 +61,21 @@ def stats_command(update, context):
         )
 
     else:
-        update.message.reply_text(phrases['no_graph'])
+        update.message.reply_text(phrases['no-graph'])
+
+
+@restricted
+def stats_all_command(update, context):
+    for graph in get_all_graphs():
+        update.message.reply_text(
+            phrases['stats'].format(
+                graph.number_of_nodes(),
+                graph.number_of_edges(),
+                graph.size('weight'),
+            ),
+            parse_mode=ParseMode.MARKDOWN,
+            disable_web_page_preview=True,
+        )
 
 
 def generate_command(update, context):
@@ -73,7 +94,7 @@ def generate_command(update, context):
 
     except (IndexError, ValueError):
         update.message.reply_text(
-            phrases['generate_help'],
+            phrases['generate-help'],
             parse_mode=ParseMode.MARKDOWN,
         )
 
@@ -81,6 +102,21 @@ def generate_command(update, context):
 def clear_command(update, context):
     delete_user_graph(update.message.chat_id)
     update.message.reply_text(phrases['done'])
+
+
+@restricted
+def clear_user_command(update, context):
+    try:
+        user_id = int(context.args[0])
+        delete_user_graph(user_id)
+
+    except:
+        update.message.reply_text(phrases['clear-user-help'])
+
+
+@restricted
+def clear_all_command(update, context):
+    delete_all_graphs()
 
 
 def handle_text(update, context):
@@ -109,8 +145,11 @@ def main():
     dispatcher.add_handler(CommandHandler('start', start_command))
     dispatcher.add_handler(CommandHandler('help', help_command))
     dispatcher.add_handler(CommandHandler('stats', stats_command))
+    dispatcher.add_handler(CommandHandler('stats_all', stats_command))
     dispatcher.add_handler(CommandHandler('generate', generate_command))
     dispatcher.add_handler(CommandHandler('clear', clear_command))
+    dispatcher.add_handler(CommandHandler('clear_user', clear_command))
+    dispatcher.add_handler(CommandHandler('clear_all', clear_command))
     dispatcher.add_handler(
         MessageHandler(Filters.text & ~Filters.command, handle_text)
     )
