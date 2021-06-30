@@ -29,11 +29,11 @@
 
 Вхідний текст:
 
-> Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+`Lorem ipsum dolor sit amet, consectetur adipiscing elit.`
 
 Розділений на токени:
 
-> [['lorem', 'ipsum', 'dolor', 'sit', 'amet', ',', 'consectetur', 'adipiscing', 'elit', '.']]
+`[['lorem', 'ipsum', 'dolor', 'sit', 'amet', ',', 'consectetur', 'adipiscing', 'elit', '.']]`
 
 Представлений у вигляді графа:
 
