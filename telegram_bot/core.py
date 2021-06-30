@@ -1,4 +1,5 @@
 import logging
+import os
 
 import numpy as np
 import yaml
@@ -138,7 +139,32 @@ def handle_text(update, context):
 
 
 def handle_file(update, context):
-    pass
+    user_id = update.message.chat_id
+    file = update.message.effective_attachment.get_file()
+
+    if os.path.basename(file['file_path']).split('.')[-1] == 'txt':
+        try:
+            path = config['user-texts-path'].format(user_id)
+            file.download(path)
+
+            with open(path, 'r') as f:
+                update_user_graph(
+                    user_id,
+                    sentences_to_graph(
+                        text_to_sentences(f.read()),
+                        get_user_graph(user_id),
+                    ),
+                )
+
+            os.remove(path)
+            context.bot.send_message(user_id, phrases['processed'])
+
+        except Exception as exc:
+            logging.error(exc)
+            context.bot.send_message(user_id, phrases['error'])
+
+    else:
+        context.bot.send_message(user_id, phrases['wrong-file'])
 
 
 def error_handler(update, context):

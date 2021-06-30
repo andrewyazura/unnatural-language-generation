@@ -9,4 +9,5 @@ admin-ids:
   - telegram_id
   - another_id
   - one_more_id
-user-graphs-path: user_graphs/
+user-graphs-path: 'user_graphs/{}.json'
+user-texts-path: 'user_texts/{}.txt'
