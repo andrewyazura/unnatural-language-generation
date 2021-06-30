@@ -38,6 +38,25 @@ def help_command(update, context):
     )
 
 
+def stats_command(update, context):
+    user_id = update.message.chat_id
+    graph = get_user_graph(user_id)
+
+    if graph:
+        update.message.reply_text(
+            phrases['stats'].format(
+                graph.number_of_nodes(),
+                graph.number_of_edges(),
+                graph.size('weight'),
+            ),
+            parse_mode=ParseMode.MARKDOWN,
+            disable_web_page_preview=True,
+        )
+
+    else:
+        update.message.reply_text(phrases['no_graph'])
+
+
 def generate_command(update, context):
     user_id = update.message.chat_id
     context.bot.send_chat_action(user_id, 'typing')
@@ -86,6 +105,7 @@ def main():
 
     dispatcher.add_handler(CommandHandler('start', start_command))
     dispatcher.add_handler(CommandHandler('help', help_command))
+    dispatcher.add_handler(CommandHandler('stats', stats_command))
     dispatcher.add_handler(CommandHandler('generate', generate_command))
     dispatcher.add_handler(CommandHandler('clear', clear_command))
     dispatcher.add_handler(

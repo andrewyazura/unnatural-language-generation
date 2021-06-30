@@ -17,6 +17,13 @@ help: |-
   /clear - очистити записані тексти.
   
   Перейдіть за посиланням, щоб дізнатися більше: [Github](https://github.com/andrewyazura/unnatural-language-generation/blob/telegram-bot/README.md)
+stats: |-
+  *Кількість відомих слів:* {}
+  *Кількість зв'язків між словами:* {}
+  *Загальна вага графу:* {}
+
+  Перейдіть за посиланням, щоб дізнатися більше: [Github](https://github.com/andrewyazura/unnatural-language-generation/blob/telegram-bot/README.md)
 generate_help: 'Правильне використання: /generate <довжина речення>'
-processed: 'Успішно опрацьовано'
+processed: 'Успішно опрацьовано!'
 done: 'Готово!'
+no_graph: 'У вас немає записів...'
