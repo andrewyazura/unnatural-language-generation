@@ -23,7 +23,9 @@ def get_all_graphs():
     path = os.path.join(config['user-graphs-path'], '*.json')
     for filename in glob.glob(path):
         with open(filename, 'r') as f:
-            yield node_link_graph(json.load(f))
+            yield os.path.basename(filename).split('.')[0], node_link_graph(
+                json.load(f)
+            )
 
 
 def update_user_graph(user_id, graph):

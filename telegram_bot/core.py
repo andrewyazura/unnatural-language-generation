@@ -66,9 +66,10 @@ def stats_command(update, context):
 
 @restricted
 def stats_all_command(update, context):
-    for graph in get_all_graphs():
+    for filename, graph in get_all_graphs():
         update.message.reply_text(
-            phrases['stats'].format(
+            f'*Користувач:* {filename}\n'
+            + phrases['stats'].format(
                 graph.number_of_nodes(),
                 graph.number_of_edges(),
                 graph.size('weight'),
@@ -144,12 +145,12 @@ def main():
 
     dispatcher.add_handler(CommandHandler('start', start_command))
     dispatcher.add_handler(CommandHandler('help', help_command))
+    dispatcher.add_handler(CommandHandler('stats_all', stats_all_command))
     dispatcher.add_handler(CommandHandler('stats', stats_command))
-    dispatcher.add_handler(CommandHandler('stats_all', stats_command))
     dispatcher.add_handler(CommandHandler('generate', generate_command))
+    dispatcher.add_handler(CommandHandler('clear_all', clear_all_command))
+    dispatcher.add_handler(CommandHandler('clear_user', clear_user_command))
     dispatcher.add_handler(CommandHandler('clear', clear_command))
-    dispatcher.add_handler(CommandHandler('clear_user', clear_command))
-    dispatcher.add_handler(CommandHandler('clear_all', clear_command))
     dispatcher.add_handler(
         MessageHandler(Filters.text & ~Filters.command, handle_text)
     )
