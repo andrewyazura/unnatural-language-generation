@@ -9,13 +9,13 @@ help: |-
   /stats - показати інформацію про записані дані.
   /clear - очистити записані дані.
 
-  Перейдіть за посиланням, щоб дізнатися більше: [Github](https://github.com/andrewyazura/unnatural-language-generation/blob/telegram-bot/README.md)
+  Перейдіть за посиланням, щоб дізнатися більше: [Github](https://github.com/andrewyazura/unnatural-language-generation#readme)
 stats: |-
   *Кількість відомих слів:* {}
   *Кількість зв'язків між словами:* {}
   *Загальна вага графу:* {}
 
-  Перейдіть за посиланням, щоб дізнатися більше: [Github](https://github.com/andrewyazura/unnatural-language-generation/blob/telegram-bot/README.md)
+  Перейдіть за посиланням, щоб дізнатися більше: [Github](https://github.com/andrewyazura/unnatural-language-generation#readme)
 generate-help: 'Правильне використання: /generate _<довжина речення>_'
 clear-user-help: 'Правильне використання: /clear_user _<ID користувача>_'
 processed: 'Успішно опрацьовано!'
