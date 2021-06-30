@@ -83,7 +83,7 @@ Telegram бот [@unnatural_language_bot](https://t.me/unnatural_language_bot)
 
 ## Telegram bot
 
-Для зручного користування програмою існує telegram bot - [@unnatural_language_bot](https://t.me/unnatural_language_bot).
+Для зручного користування програмою існує telegram бот - [@unnatural_language_bot](https://t.me/unnatural_language_bot).
 Кожен користувач має свій граф і може додавати в нього нові слова, зв'язки чи очищати його.
 Щоб запустити бота у себе потрібно зареєструвати свого бота через [@botfather](https://t.me/botfather) та ввести власні дані у `telegram_bot/bot_config.yml` та запустити `main_bot.py`.
 
