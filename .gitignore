@@ -184,5 +184,6 @@ pip-selfcheck.json
 # End of https://www.toptal.com/developers/gitignore/api/python,venv,virtualenv,visualstudiocode
 
 user_graphs/
+user_texts/
 bot_config.yml
 bot.log
