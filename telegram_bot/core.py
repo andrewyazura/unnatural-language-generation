@@ -72,7 +72,10 @@ def generate_command(update, context):
         )
 
     except (IndexError, ValueError):
-        update.message.reply_text(phrases['generate_help'])
+        update.message.reply_text(
+            phrases['generate_help'],
+            parse_mode=ParseMode.MARKDOWN,
+        )
 
 
 def clear_command(update, context):
