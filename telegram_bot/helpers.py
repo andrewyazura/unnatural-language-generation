@@ -12,7 +12,7 @@ with open('telegram_bot/bot_config.yml', 'r') as stream:
 
 
 def get_user_graph(user_id):
-    path = os.path.join(config['user-graphs-path'], f'{user_id}.json')
+    path = config['user-graphs-path'].format(user_id)
 
     if os.path.exists(path):
         with open(path, 'r') as f:
@@ -20,7 +20,7 @@ def get_user_graph(user_id):
 
 
 def get_all_graphs():
-    path = os.path.join(config['user-graphs-path'], '*.json')
+    path = config['user-graphs-path'].format('*')
     for filename in glob.glob(path):
         with open(filename, 'r') as f:
             yield os.path.basename(filename).split('.')[0], node_link_graph(
@@ -29,19 +29,19 @@ def get_all_graphs():
 
 
 def update_user_graph(user_id, graph):
-    path = os.path.join(config['user-graphs-path'], f'{user_id}.json')
+    path = config['user-graphs-path'].format(user_id)
 
     with open(path, 'w+') as f:
         json.dump(node_link_data(graph), f)
 
 
 def delete_user_graph(user_id):
-    path = os.path.join(config['user-graphs-path'], f'{user_id}.json')
+    path = config['user-graphs-path'].format(user_id)
     os.remove(path)
 
 
 def delete_all_graphs():
-    path = os.path.join(config['user-graphs-path'], '*.json')
+    path = config['user-graphs-path'].format('*')
     for filename in glob.glob(path):
         os.remove(filename)
 
