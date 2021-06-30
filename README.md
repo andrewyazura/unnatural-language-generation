@@ -38,7 +38,7 @@
 
 ## Приклади
 
-Завантажити тексти, використані для прикладів можна тут: [GitHub Gist](https://gist.github.com/andrewyazura/98b612f4fe9c3075177d992495ccee12).
+Завантажити тексти, використані для прикладів, можна тут: [GitHub Gist](https://gist.github.com/andrewyazura/98b612f4fe9c3075177d992495ccee12).
 
 ### Кобзар
 
