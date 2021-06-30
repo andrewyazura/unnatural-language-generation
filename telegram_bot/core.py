@@ -144,6 +144,10 @@ def handle_text(update, context):
     context.bot.send_message(user_id, phrases['processed'])
 
 
+def handle_file(update, context):
+    pass
+
+
 def error_handler(update, context):
     logging.error(context.error)
 
