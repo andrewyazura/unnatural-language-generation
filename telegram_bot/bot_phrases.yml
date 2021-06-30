@@ -6,7 +6,8 @@ help: |-
 
   *Доступні команди:*
   /generate _<число>_ - згенерувати речення з заданою кількістю слів.
-  /clear - очистити записані тексти.
+  /stats - показати інформацію про записані дані.
+  /clear - очистити записані дані.
 
   Перейдіть за посиланням, щоб дізнатися більше: [Github](https://github.com/andrewyazura/unnatural-language-generation/blob/telegram-bot/README.md)
 stats: |-
