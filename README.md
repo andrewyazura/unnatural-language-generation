@@ -109,4 +109,4 @@
 
 ## Credits
 
-Дякую за ідею @danbst
+Дякую за ідею [@danbst](https://github.com/danbst)
