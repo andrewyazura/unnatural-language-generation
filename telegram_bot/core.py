@@ -2,7 +2,7 @@ import logging
 
 import numpy as np
 import yaml
-from telegram import Update, ParseMode
+from telegram import ParseMode
 from telegram.ext import CommandHandler, Filters, MessageHandler, Updater
 from text_generation import (
     random_sentence,
