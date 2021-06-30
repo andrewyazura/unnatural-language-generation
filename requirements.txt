@@ -1,3 +1,5 @@
 networkx
 numpy
+python-telegram-bot
+pyyaml
 tokenize_uk

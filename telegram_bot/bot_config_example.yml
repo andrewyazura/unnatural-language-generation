@@ -1,0 +1,12 @@
+logging:
+  filename: bot.log
+  level: WARNING
+
+telegram-bot:
+  token: your_token
+
+admin-ids:
+  - telegram_id
+  - another_id
+  - one_more_id
+user-graphs-path: user_graphs/
