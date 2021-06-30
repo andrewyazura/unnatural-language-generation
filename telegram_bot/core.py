@@ -2,7 +2,7 @@ import logging
 
 import numpy as np
 import yaml
-from telegram import ParseMode
+from telegram import ChatAction, ParseMode
 from telegram.ext import CommandHandler, Filters, MessageHandler, Updater
 from text_generation import (
     random_sentence,
@@ -81,7 +81,7 @@ def stats_all_command(update, context):
 
 def generate_command(update, context):
     user_id = update.message.chat_id
-    context.bot.send_chat_action(user_id, 'typing')
+    context.bot.send_chat_action(user_id, ChatAction.TYPING)
 
     try:
         length = int(context.args[0])
@@ -122,7 +122,7 @@ def clear_all_command(update, context):
 
 def handle_text(update, context):
     user_id = update.message.chat_id
-    context.bot.send_chat_action(user_id, 'typing')
+    context.bot.send_chat_action(user_id, ChatAction.TYPING)
 
     update_user_graph(
         user_id,
