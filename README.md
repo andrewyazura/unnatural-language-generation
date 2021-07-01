@@ -1,7 +1,7 @@
 # Unnatural language generation / Генератор неприродної мови
 
 ![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/andrewyazura/unnatural-language-generation?include_prereleases&label=release&labelColor=181717&logo=github)
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/andrewyazura/unnatural-language-generation/Lint?label=linter&labelColor=181717&logo=github)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/andrewyazura/unnatural-language-generation/lint?label=linter&labelColor=181717&logo=github)
 [![Telegram Bot Link](https://img.shields.io/static/v1?label=telegram&message=bot&color=26a5e4&labelColor=181717&logo=telegram)](https://t.me/unnatural_language_bot)
 
 ## Що це?
