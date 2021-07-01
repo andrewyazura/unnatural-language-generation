@@ -46,11 +46,11 @@ Telegram бот [@unnatural_language_bot](https://t.me/unnatural_language_bot)
 
 Представлений у вигляді графа:
 
-![image](https://user-images.githubusercontent.com/39884112/123977582-c9113700-d9c7-11eb-9e8b-7f9de9897f7e.png)
+![image](https://user-images.githubusercontent.com/39884112/124186706-600fe900-dac5-11eb-9e29-f3b75bb1dfee.png)
 
 Кожен зв'язок має вагу 1, бо зустрічався всього один раз за весь текст. Якщо взяти цілий абзац _Lorem ipsum_, отримаємо такий граф:
 
-![image](https://user-images.githubusercontent.com/39884112/123977950-21e0cf80-d9c8-11eb-8e16-56cd4fdede43.png)
+![image](https://user-images.githubusercontent.com/39884112/124186905-a6fdde80-dac5-11eb-97db-fdaa149cd7a4.png)
 
 Слів стало набагато більше, а деякі зв'язки мають вагу 2.
 
