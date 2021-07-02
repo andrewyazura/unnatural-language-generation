@@ -1,9 +1,16 @@
 import logging
+import os
 
 import numpy as np
 import yaml
 from telegram import ChatAction, ParseMode
-from telegram.ext import CommandHandler, Filters, MessageHandler, Updater
+from telegram.ext import (
+    CommandHandler,
+    Defaults,
+    Filters,
+    MessageHandler,
+    Updater,
+)
 from text_generation import (
     random_sentence,
     sentences_to_graph,
@@ -30,19 +37,11 @@ logger = logging.getLogger(__name__)
 
 
 def start_command(update, context):
-    update.message.reply_text(
-        phrases['start'] + '\n\n' + phrases['help'],
-        parse_mode=ParseMode.MARKDOWN,
-        disable_web_page_preview=True,
-    )
+    update.message.reply_text(phrases['start'] + '\n\n' + phrases['help'])
 
 
 def help_command(update, context):
-    update.message.reply_text(
-        phrases['help'],
-        parse_mode=ParseMode.MARKDOWN,
-        disable_web_page_preview=True,
-    )
+    update.message.reply_text(phrases['help'])
 
 
 def stats_command(update, context):
@@ -55,9 +54,7 @@ def stats_command(update, context):
                 graph.number_of_nodes(),
                 graph.number_of_edges(),
                 graph.size('weight'),
-            ),
-            parse_mode=ParseMode.MARKDOWN,
-            disable_web_page_preview=True,
+            )
         )
 
     else:
@@ -73,9 +70,7 @@ def stats_all_command(update, context):
                 graph.number_of_nodes(),
                 graph.number_of_edges(),
                 graph.size('weight'),
-            ),
-            parse_mode=ParseMode.MARKDOWN,
-            disable_web_page_preview=True,
+            )
         )
 
 
@@ -96,7 +91,6 @@ def generate_command(update, context):
     except (IndexError, ValueError):
         update.message.reply_text(
             phrases['generate-help'],
-            parse_mode=ParseMode.MARKDOWN,
         )
 
     except:
@@ -144,12 +138,44 @@ def handle_text(update, context):
     context.bot.send_message(user_id, phrases['processed'])
 
 
+def handle_file(update, context):
+    user_id = update.message.chat_id
+    file = update.message.effective_attachment.get_file()
+
+    if os.path.basename(file['file_path']).split('.')[-1] == 'txt':
+        try:
+            path = config['user-texts-path'].format(user_id)
+            file.download(path)
+
+            with open(path, 'r') as f:
+                update_user_graph(
+                    user_id,
+                    sentences_to_graph(
+                        text_to_sentences(f.read()),
+                        get_user_graph(user_id),
+                    ),
+                )
+
+            os.remove(path)
+            context.bot.send_message(user_id, phrases['processed'])
+
+        except Exception as exc:
+            logging.error(exc)
+            context.bot.send_message(user_id, phrases['error'])
+
+    else:
+        context.bot.send_message(user_id, phrases['wrong-file'])
+
+
 def error_handler(update, context):
     logging.error(context.error)
 
 
 def run_bot():
-    updater = Updater(**config['telegram-bot'])
+    defaults = Defaults(
+        parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True
+    )
+    updater = Updater(**config['telegram-bot'], defaults=defaults)
     dispatcher = updater.dispatcher
 
     dispatcher.add_handler(CommandHandler('start', start_command))
@@ -160,6 +186,7 @@ def run_bot():
     dispatcher.add_handler(CommandHandler('clear_all', clear_all_command))
     dispatcher.add_handler(CommandHandler('clear_user', clear_user_command))
     dispatcher.add_handler(CommandHandler('clear', clear_command))
+    dispatcher.add_handler(MessageHandler(Filters.document, handle_file))
     dispatcher.add_handler(
         MessageHandler(Filters.text & ~Filters.command, handle_text)
     )
