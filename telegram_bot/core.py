@@ -149,6 +149,7 @@ def handle_text(update, context):
 def handle_file(update, context):
     user_id = update.message.chat_id
     file = update.message.effective_attachment.get_file()
+    context.bot.send_chat_action(user_id, ChatAction.TYPING)
 
     if os.path.basename(file['file_path']).split('.')[-1] == 'txt':
         try:
@@ -193,6 +194,7 @@ def preset_callback(update, context):
 
     query.answer()
     query.edit_message_text(text=phrases['chosen-preset'].format(query.data))
+    context.bot.send_chat_action(user_id, ChatAction.TYPING)
 
     try:
         text = requests.get(config['presets'][query.data]).text
