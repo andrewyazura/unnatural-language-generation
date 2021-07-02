@@ -37,7 +37,8 @@ logger = logging.getLogger(__name__)
 
 
 def start_command(update, context):
-    update.message.reply_text(phrases['start'] + '\n\n' + phrases['help'])
+    update.message.reply_text(phrases['start'])
+    update.message.reply_text(phrases['help'])
 
 
 def help_command(update, context):
