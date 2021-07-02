@@ -2,9 +2,16 @@ import logging
 import os
 
 import numpy as np
+import requests
 import yaml
-from telegram import ChatAction, ParseMode
+from telegram import (
+    ChatAction,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    ParseMode,
+)
 from telegram.ext import (
+    CallbackQueryHandler,
     CommandHandler,
     Defaults,
     Filters,
@@ -142,6 +149,7 @@ def handle_text(update, context):
 def handle_file(update, context):
     user_id = update.message.chat_id
     file = update.message.effective_attachment.get_file()
+    context.bot.send_chat_action(user_id, ChatAction.TYPING)
 
     if os.path.basename(file['file_path']).split('.')[-1] == 'txt':
         try:
@@ -168,6 +176,42 @@ def handle_file(update, context):
         context.bot.send_message(user_id, phrases['wrong-file'])
 
 
+def presets_command(update, context):
+    keyboard = [
+        [InlineKeyboardButton(title, callback_data=title)]
+        for title in config['presets']
+    ]
+
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    update.message.reply_text(
+        phrases['choose-preset'], reply_markup=reply_markup
+    )
+
+
+def preset_callback(update, context):
+    query = update.callback_query
+    user_id = query.from_user.id
+
+    query.answer()
+    query.edit_message_text(text=phrases['chosen-preset'].format(query.data))
+    context.bot.send_chat_action(user_id, ChatAction.TYPING)
+
+    try:
+        text = requests.get(config['presets'][query.data]).text
+        update_user_graph(
+            user_id,
+            sentences_to_graph(
+                text_to_sentences(text),
+                get_user_graph(user_id),
+            ),
+        )
+        context.bot.send_message(user_id, phrases['processed'])
+
+    except Exception as exc:
+        logging.error(exc)
+        context.bot.send_message(user_id, phrases['error'])
+
+
 def error_handler(update, context):
     logging.error(context.error)
 
@@ -187,6 +231,8 @@ def run_bot():
     dispatcher.add_handler(CommandHandler('clear_all', clear_all_command))
     dispatcher.add_handler(CommandHandler('clear_user', clear_user_command))
     dispatcher.add_handler(CommandHandler('clear', clear_command))
+    dispatcher.add_handler(CommandHandler('presets', presets_command))
+    dispatcher.add_handler(CallbackQueryHandler(preset_callback))
     dispatcher.add_handler(MessageHandler(Filters.document, handle_file))
     dispatcher.add_handler(
         MessageHandler(Filters.text & ~Filters.command, handle_text)
