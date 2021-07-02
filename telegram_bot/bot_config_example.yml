@@ -9,5 +9,10 @@ admin-ids:
   - telegram_id
   - another_id
   - one_more_id
+
+presets:
+  title: link_to_txt_file
+  another_title: another_link
+
 user-graphs-path: 'tmp/user_graphs/{}.json'
 user-texts-path: 'tmp/user_texts/{}.txt'

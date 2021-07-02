@@ -16,6 +16,8 @@ stats: |-
   *Загальна вага графу:* {}
 
   Перейдіть за посиланням, щоб дізнатися більше: [Github](https://github.com/andrewyazura/unnatural-language-generation#readme)
+choose-preset: 'Оберіть готовий текст зі списку:'
+chosen-preset: 'Обраний текст - {}'
 generate-help: 'Правильне використання: /generate _<довжина речення>_'
 clear-user-help: 'Правильне використання: /clear_user _<ID користувача>_'
 processed: 'Успішно опрацьовано!'
