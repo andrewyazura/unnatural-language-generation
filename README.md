@@ -11,7 +11,8 @@
 
 ## Як спробувати?
 
-Telegram бот [@unnatural_language_bot](https://t.me/unnatural_language_bot)
+Telegram бот [@unnatural_language_bot](https://t.me/unnatural_language_bot).
+Він має декілька готових текстів, якими ви можете одразу скористатися.
 
 ## Як це працює?
 
@@ -89,6 +90,7 @@ Telegram бот [@unnatural_language_bot](https://t.me/unnatural_language_bot)
 
 Для зручного користування програмою існує telegram бот - [@unnatural_language_bot](https://t.me/unnatural_language_bot).
 Кожен користувач має окремий граф і може наповнювати його, надсилаючи текст у вигляді повідомлення або `.txt` файлу.
+Є можливість обрати один з готових текстів за допомогою команди `/presets`
 
 Щоб запустити бота у себе потрібно зареєструвати свого бота через [@botfather](https://t.me/botfather), ввести власні дані у `telegram_bot/bot_config.yml` та запустити `main_bot.py`.
 
@@ -96,6 +98,7 @@ Telegram бот [@unnatural_language_bot](https://t.me/unnatural_language_bot)
 
 | Команда              | Значення                          |
 | -------------------- | --------------------------------- |
+| `/presets`           | обрати  готовий текст             |
 | `/generate <length>` | згенерувати текст заданої довжини |
 | `/stats`             | показати статистику про граф      |
 | `/clear`             | очистити свій граф                |
