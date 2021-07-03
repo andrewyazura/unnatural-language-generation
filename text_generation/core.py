@@ -8,7 +8,7 @@ import tokenize_uk as tn
 def text_to_tokens(text):
     return [
         token
-        for paragraph in tn.tokenize_text(text)
+        for paragraph in tn.tokenize_text(text.lower())
         for sentence in paragraph
         for token in sentence
     ]
@@ -45,6 +45,9 @@ def random_sentence(graph, start_token, length):
         total_weights = sum(weights)
         weights = [w / total_weights for w in weights]
         token = np.random.choice(list(adj), 1, p=weights)[0]
+
+        if sentence[-1] == '.':
+            token = token.capitalize()
 
         if not all(i in string.punctuation for i in token):
             sentence += ' '
