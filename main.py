@@ -6,7 +6,7 @@ from text_generation import (
     text_to_sentences,
 )
 
-with open('text.txt', 'r') as f:
+with open('tmp/text.txt', 'r') as f:
     t = f.read().lower()
 
 sentences = text_to_sentences(t)

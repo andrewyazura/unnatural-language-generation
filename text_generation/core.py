@@ -27,7 +27,7 @@ def random_sentence(graph, start_word, length):
     sentence = start_word
     word = start_word
 
-    while length:
+    for _ in range(length - 1):
         adj = graph[word]
         if not adj:
             break
@@ -38,6 +38,5 @@ def random_sentence(graph, start_word, length):
         word = np.random.choice(list(adj), 1, p=weights)[0]
 
         sentence += ' ' + word
-        length -= 1
 
     return sentence
