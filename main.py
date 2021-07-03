@@ -2,16 +2,15 @@ import numpy as np
 
 from text_generation import (
     random_sentence,
-    sentences_to_graph,
-    text_to_sentences,
+    tokens_to_graph,
+    text_to_tokens,
 )
 
 with open('tmp/text.txt', 'r') as f:
-    t = f.read().lower()
+    t = f.read()
 
-sentences = text_to_sentences(t)
-
-graph = sentences_to_graph(sentences)
+tokens = text_to_tokens(t)
+graph = tokens_to_graph(tokens)
 word = np.random.choice(graph.nodes)
 
 generated_sentence = random_sentence(graph, word, 40)

@@ -1,1 +1,1 @@
-from .core import random_sentence, sentences_to_graph, text_to_sentences
+from .core import random_sentence, text_to_tokens, tokens_to_graph
