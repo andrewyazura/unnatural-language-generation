@@ -82,29 +82,6 @@ def stats_all_command(update, context):
         )
 
 
-def generate_command(update, context):
-    user_id = update.message.chat_id
-    context.bot.send_chat_action(user_id, ChatAction.TYPING)
-
-    try:
-        length = int(context.args[0])
-        graph = get_user_graph(user_id)
-        word = np.random.choice(graph.nodes)
-
-        context.bot.send_message(
-            user_id,
-            random_sentence(graph, word, length),
-        )
-
-    except (IndexError, ValueError):
-        update.message.reply_text(
-            phrases['generate-help'],
-        )
-
-    except:
-        update.message.reply_text(phrases['no-graph'])
-
-
 def clear_command(update, context):
     try:
         delete_user_graph(update.message.chat_id)
@@ -129,6 +106,65 @@ def clear_user_command(update, context):
 def clear_all_command(update, context):
     delete_all_graphs()
     update.message.reply_text(phrases['done'])
+
+
+def generate_command(update, context):
+    user_id = update.message.chat_id
+    context.bot.send_chat_action(user_id, ChatAction.TYPING)
+
+    try:
+        length = int(context.args[0])
+        graph = get_user_graph(user_id)
+        word = np.random.choice(graph.nodes)
+
+        context.bot.send_message(
+            user_id,
+            random_sentence(graph, word, length),
+        )
+
+    except (IndexError, ValueError):
+        update.message.reply_text(
+            phrases['generate-help'],
+        )
+
+    except:
+        update.message.reply_text(phrases['no-graph'])
+
+
+def presets_command(update, context):
+    keyboard = [
+        [InlineKeyboardButton(title, callback_data=title)]
+        for title in config['presets']
+    ]
+
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    update.message.reply_text(
+        phrases['choose-preset'], reply_markup=reply_markup
+    )
+
+
+def preset_callback(update, context):
+    query = update.callback_query
+    user_id = query.from_user.id
+
+    query.answer()
+    query.edit_message_text(text=phrases['chosen-preset'].format(query.data))
+    context.bot.send_chat_action(user_id, ChatAction.TYPING)
+
+    try:
+        text = requests.get(config['presets'][query.data]).text
+        update_user_graph(
+            user_id,
+            sentences_to_graph(
+                text_to_sentences(text),
+                get_user_graph(user_id),
+            ),
+        )
+        context.bot.send_message(user_id, phrases['processed'])
+
+    except Exception as exc:
+        logging.error(exc)
+        context.bot.send_message(user_id, phrases['error'])
 
 
 def handle_text(update, context):
@@ -176,42 +212,6 @@ def handle_file(update, context):
         context.bot.send_message(user_id, phrases['wrong-file'])
 
 
-def presets_command(update, context):
-    keyboard = [
-        [InlineKeyboardButton(title, callback_data=title)]
-        for title in config['presets']
-    ]
-
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    update.message.reply_text(
-        phrases['choose-preset'], reply_markup=reply_markup
-    )
-
-
-def preset_callback(update, context):
-    query = update.callback_query
-    user_id = query.from_user.id
-
-    query.answer()
-    query.edit_message_text(text=phrases['chosen-preset'].format(query.data))
-    context.bot.send_chat_action(user_id, ChatAction.TYPING)
-
-    try:
-        text = requests.get(config['presets'][query.data]).text
-        update_user_graph(
-            user_id,
-            sentences_to_graph(
-                text_to_sentences(text),
-                get_user_graph(user_id),
-            ),
-        )
-        context.bot.send_message(user_id, phrases['processed'])
-
-    except Exception as exc:
-        logging.error(exc)
-        context.bot.send_message(user_id, phrases['error'])
-
-
 def error_handler(update, context):
     logging.error(context.error)
 
@@ -225,18 +225,22 @@ def run_bot():
 
     dispatcher.add_handler(CommandHandler('start', start_command))
     dispatcher.add_handler(CommandHandler('help', help_command))
-    dispatcher.add_handler(CommandHandler('stats_all', stats_all_command))
+
     dispatcher.add_handler(CommandHandler('stats', stats_command))
-    dispatcher.add_handler(CommandHandler('generate', generate_command))
-    dispatcher.add_handler(CommandHandler('clear_all', clear_all_command))
-    dispatcher.add_handler(CommandHandler('clear_user', clear_user_command))
+    dispatcher.add_handler(CommandHandler('stats_all', stats_all_command))
+
     dispatcher.add_handler(CommandHandler('clear', clear_command))
+    dispatcher.add_handler(CommandHandler('clear_user', clear_user_command))
+    dispatcher.add_handler(CommandHandler('clear_all', clear_all_command))
+
+    dispatcher.add_handler(CommandHandler('generate', generate_command))
     dispatcher.add_handler(CommandHandler('presets', presets_command))
     dispatcher.add_handler(CallbackQueryHandler(preset_callback))
-    dispatcher.add_handler(MessageHandler(Filters.document, handle_file))
+
     dispatcher.add_handler(
         MessageHandler(Filters.text & ~Filters.command, handle_text)
     )
+    dispatcher.add_handler(MessageHandler(Filters.document, handle_file))
 
     dispatcher.add_error_handler(error_handler)
 

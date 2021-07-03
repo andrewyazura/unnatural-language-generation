@@ -19,7 +19,9 @@ stats: |-
 
   Перейдіть за посиланням, щоб дізнатися більше: [Github](https://github.com/andrewyazura/unnatural-language-generation#readme)
 choose-preset: 'Оберіть готовий текст зі списку:'
-chosen-preset: 'Обраний текст - {}'
+chosen-preset: |-
+  Обраний текст - {}.
+  Зачекайте, це може зайняти деякий час...
 generate-help: 'Правильне використання: /generate _<довжина речення>_'
 clear-user-help: 'Правильне використання: /clear_user _<ID користувача>_'
 processed: 'Успішно опрацьовано!'
