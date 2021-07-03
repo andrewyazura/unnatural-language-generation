@@ -31,7 +31,7 @@ def tokens_to_graph(tokens, graph=None):
 
 
 def random_sentence(graph, start_token, length):
-    sentence = start_token
+    sentence = start_token.capitalize()
     token = start_token
 
     for _ in range(length - 1):
