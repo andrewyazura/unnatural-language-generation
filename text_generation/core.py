@@ -37,7 +37,9 @@ def random_sentence(graph, start_token, length):
     for _ in range(length - 1):
         adj = graph[token]
         if not adj:
-            break
+            token = '.'
+            sentence += token
+            continue
 
         weights = [adj[w]['weight'] for w in adj]
         total_weights = sum(weights)
