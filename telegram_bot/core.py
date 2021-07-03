@@ -20,8 +20,8 @@ from telegram.ext import (
 )
 from text_generation import (
     random_sentence,
-    sentences_to_graph,
-    text_to_sentences,
+    tokens_to_graph,
+    text_to_tokens,
 )
 
 from .helpers import (
@@ -155,8 +155,8 @@ def preset_callback(update, context):
         text = requests.get(config['presets'][query.data]).text
         update_user_graph(
             user_id,
-            sentences_to_graph(
-                text_to_sentences(text),
+            tokens_to_graph(
+                text_to_tokens(text),
                 get_user_graph(user_id),
             ),
         )
@@ -173,8 +173,8 @@ def handle_text(update, context):
 
     update_user_graph(
         user_id,
-        sentences_to_graph(
-            text_to_sentences(update.message.text),
+        tokens_to_graph(
+            text_to_tokens(update.message.text),
             get_user_graph(user_id),
         ),
     )
@@ -195,8 +195,8 @@ def handle_file(update, context):
             with open(path, 'r') as f:
                 update_user_graph(
                     user_id,
-                    sentences_to_graph(
-                        text_to_sentences(f.read()),
+                    tokens_to_graph(
+                        text_to_tokens(f.read()),
                         get_user_graph(user_id),
                     ),
                 )
