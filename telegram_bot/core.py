@@ -226,21 +226,33 @@ def run_bot():
     dispatcher.add_handler(CommandHandler('start', start_command))
     dispatcher.add_handler(CommandHandler('help', help_command))
 
-    dispatcher.add_handler(CommandHandler('stats', stats_command))
-    dispatcher.add_handler(CommandHandler('stats_all', stats_all_command))
+    dispatcher.add_handler(
+        CommandHandler('stats', stats_command, run_async=True)
+    )
+    dispatcher.add_handler(
+        CommandHandler('stats_all', stats_all_command, run_async=True)
+    )
 
     dispatcher.add_handler(CommandHandler('clear', clear_command))
     dispatcher.add_handler(CommandHandler('clear_user', clear_user_command))
     dispatcher.add_handler(CommandHandler('clear_all', clear_all_command))
 
-    dispatcher.add_handler(CommandHandler('generate', generate_command))
+    dispatcher.add_handler(
+        CommandHandler('generate', generate_command, run_async=True)
+    )
     dispatcher.add_handler(CommandHandler('presets', presets_command))
-    dispatcher.add_handler(CallbackQueryHandler(preset_callback))
+    dispatcher.add_handler(
+        CallbackQueryHandler(preset_callback, run_async=True)
+    )
 
     dispatcher.add_handler(
-        MessageHandler(Filters.text & ~Filters.command, handle_text)
+        MessageHandler(
+            Filters.text & ~Filters.command, handle_text, run_async=True
+        )
     )
-    dispatcher.add_handler(MessageHandler(Filters.document, handle_file))
+    dispatcher.add_handler(
+        MessageHandler(Filters.document, handle_file, run_async=True)
+    )
 
     dispatcher.add_error_handler(error_handler)
 
