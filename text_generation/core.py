@@ -1,3 +1,5 @@
+import string
+
 import networkx as nx
 import numpy as np
 import tokenize_uk as tn
@@ -37,6 +39,9 @@ def random_sentence(graph, start_word, length):
         weights = [w / total_weights for w in weights]
         word = np.random.choice(list(adj), 1, p=weights)[0]
 
-        sentence += ' ' + word
+        if not all(i in string.punctuation for i in word):
+            sentence += ' '
+
+        sentence += word
 
     return sentence
