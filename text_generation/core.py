@@ -1,5 +1,4 @@
 import random
-import string
 
 import networkx as nx
 
@@ -8,7 +7,7 @@ def join_tokens(tokens):
     result = tokens[0]
 
     for token in tokens[1:]:
-        if token not in string.punctuation:
+        if token not in '!),.:;?]}':
             result += ' '
         result += token
 
@@ -35,7 +34,8 @@ def tokens_to_graph(tokens, order=1, graph=None):
 
 
 def random_sequence(graph, length, start_tokens, order=1):
-    sequence = [*start_tokens]
+    order = min(len(start_tokens), order)
+    sequence = start_tokens
 
     for index in range(order, length - order):
         pre = join_tokens(sequence[index - order : index])
