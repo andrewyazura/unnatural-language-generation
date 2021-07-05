@@ -1,1 +1,1 @@
-from .core import random_sentence, text_to_tokens, tokens_to_graph
+from .core import join_tokens, random_sequence, tokens_to_graph

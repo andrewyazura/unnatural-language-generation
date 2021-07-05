@@ -1,17 +1,8 @@
-import numpy as np
-
-from text_generation import (
-    random_sentence,
-    tokens_to_graph,
-    text_to_tokens,
-)
+import tokenize_uk as tn
+from text_generation import tokens_to_graph
 
 with open('tmp/text.txt', 'r') as f:
     t = f.read()
 
-tokens = text_to_tokens(t)
+tokens = tn.tokenize_words(t)
 graph = tokens_to_graph(tokens)
-word = np.random.choice(graph.nodes)
-
-generated_sentence = random_sentence(graph, word, 40)
-print(generated_sentence)
