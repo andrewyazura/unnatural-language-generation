@@ -1,3 +1,4 @@
+import random
 import string
 
 import networkx as nx
@@ -41,10 +42,7 @@ def random_sentence(graph, start_token, length):
             sentence += token
             continue
 
-        weights = [adj[w]['weight'] for w in adj]
-        total_weights = sum(weights)
-        weights = [w / total_weights for w in weights]
-        token = np.random.choice(list(adj), 1, p=weights)[0]
+        token = random.choices(list(adj), (adj[w]['weight'] for w in adj))[0]
 
         if sentence[-1] == '.':
             token = token.capitalize()
@@ -53,5 +51,6 @@ def random_sentence(graph, start_token, length):
             sentence += ' '
 
         sentence += token
+        token = token.lower()
 
     return sentence
