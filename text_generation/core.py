@@ -4,19 +4,15 @@ import string
 import networkx as nx
 
 
-def join_tokens(seq):
-    characters = string.punctuation
-    seq = iter(seq)
-    current = next(seq)
+def join_tokens(tokens):
+    result = tokens[0]
 
-    for nxt in seq:
-        if nxt in characters:
-            current += nxt
-        else:
-            yield current
-            current = nxt
+    for token in tokens[1:]:
+        if token not in string.punctuation:
+            result += ' '
+        result += token
 
-    yield current
+    return result
 
 
 def update_graph(graph, key, value):
@@ -32,11 +28,26 @@ def tokens_to_graph(tokens, order=1, graph=None):
 
     for index, token in enumerate(tokens):
         if index >= order:
-            pre = ''.join(join_tokens(tokens[index - order : index]))
+            pre = join_tokens(tokens[index - order : index])
             update_graph(graph, pre, token)
 
     return graph
 
 
-def random_sequence(graph, length, start_token):
-    pass
+def random_sequence(graph, length, start_tokens, order=1):
+    sequence = [*start_tokens]
+
+    for index in range(order, length - order):
+        pre = join_tokens(sequence[index - order : index])
+        next_tokens = graph[pre]
+
+        if not next_tokens:
+            token = '.'
+            sequence += token
+            continue
+
+        weights = [next_tokens[t]['weight'] for t in next_tokens]
+        token = random.choices(list(next_tokens), weights)[0]
+        sequence.append(token)
+
+    return sequence
