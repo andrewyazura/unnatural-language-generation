@@ -21,7 +21,7 @@ def update_graph(graph, key, value):
         graph.add_edge(key, value, weight=1)
 
 
-def tokens_to_graph(tokens, order=1, graph=None):
+def convert_tokens_to_graph(tokens, order=1, graph=None):
     if graph is None:
         graph = nx.DiGraph()
 
@@ -33,7 +33,7 @@ def tokens_to_graph(tokens, order=1, graph=None):
     return graph
 
 
-def random_sequence(graph, length, start_tokens, order=1):
+def generate_random_sequence(graph, length, start_tokens, order=1):
     order = min(len(start_tokens), order)
     sequence = start_tokens
 
