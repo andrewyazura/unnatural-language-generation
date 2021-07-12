@@ -1,0 +1,17 @@
+start: 'start'
+help: 'help'
+ask-graph-name: 'Надішліть назву графу'
+cancelled: 'Скасовано'
+
+success:
+  done: Готово\!
+  saved: Збережено
+
+error:
+  many-graphs: У Вас занадто багато графів\.
+    Видаліть граф за допомогою команди /delete_graph
+  no-graphs: |-
+    У Вас немає графів\. 
+    Створіть граф за допомогою команди /create_graph
+  no-such-graph: Графу з такою назвою немає\.
+  graph-exists: Граф з такою назвою вже існує\.
