@@ -1,7 +1,5 @@
 import logging
-import sqlite3
 
-import yaml
 from telegram import (
     ChatAction,
     InlineKeyboardButton,
@@ -14,6 +12,7 @@ from telegram.ext import (
     Defaults,
     Filters,
     MessageHandler,
+    PicklePersistence,
     Updater,
 )
 from text_generation import (
@@ -22,21 +21,13 @@ from text_generation import (
     join_tokens,
 )
 
-with open('telegram_bot/bot_config.yaml', 'r') as stream:
-    config = yaml.safe_load(stream)
+from .helpers import load_yaml
 
-with open('telegram_bot/bot_phrases.yaml', 'r') as stream:
-    phrases = yaml.safe_load(stream)
-
-with open('telegram_bot/sql_queries.yaml', 'r') as stream:
-    sql_queries = yaml.safe_load(stream)
+config = load_yaml('telegram_bot/bot_config.yaml')
+phrases = load_yaml('telegram_bot/bot_phrases.yaml')
 
 logging.basicConfig(**config['logging']['basic-config'])
 logger = logging.getLogger(__name__)
-
-con = sqlite3.connect(**config['database']['connect'])
-cur = con.cursor()
-cur.execute(sql_queries['create-db'])
 
 
 def start_command(update, context):
@@ -54,9 +45,18 @@ def error_handler(update, context):
 
 def run_bot():
     defaults = Defaults(
-        parse_mode=ParseMode.MARKDOWN_V2, disable_web_page_preview=True
+        parse_mode=ParseMode.MARKDOWN_V2,
+        disable_web_page_preview=True,
     )
-    updater = Updater(**config['telegram-bot']['updater'], defaults=defaults)
+    persistence = PicklePersistence(
+        **config['telegram-bot']['persistence'],
+    )
+    updater = Updater(
+        **config['telegram-bot']['updater'],
+        defaults=defaults,
+        persistence=persistence,
+        use_context=True,
+    )
     dispatcher = updater.dispatcher
 
     dispatcher.add_handler(CommandHandler('start', start_command))

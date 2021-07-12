@@ -1,3 +1,0 @@
-create-db: >-
-  CREATE TABLE IF NOT EXISTS
-  users (telegram_id INTEGER, username TEXT, current_graph INTEGER, graphs TEXT)
