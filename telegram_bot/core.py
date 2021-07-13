@@ -1,4 +1,5 @@
 import logging
+import random
 
 import networkx as nx
 from networkx.readwrite import node_link_data, node_link_graph
@@ -47,6 +48,44 @@ def cancel_command(update, context):
     update.message.reply_text(phrases['cancelled'])
 
 
+def generate_command(update, context):
+    graph_data = context.user_data['graphs'].get(
+        context.user_data['current_graph'], None
+    )
+
+    if not graph_data:
+        return
+
+    try:
+        if context.matches:
+            words = int(context.matches[0][1])
+        else:
+            words = int(context.args[0])
+    except (ValueError, IndexError) as exc:
+        logging.error(exc)
+        update.message.reply_text(phrases['error']['value-error'])
+        return
+
+    graph = node_link_graph(graph_data)
+
+    if not graph.nodes:
+        update.message.reply_text(phrases['error']['empty-graph'])
+        return
+
+    start = random.choice(
+        [
+            n.split()
+            for n in graph.nodes
+            if graph[n] and len(n.split()) == config['order']
+        ]
+    )
+    sequence = generate_random_sequence(
+        graph, words, start, config['generator']['order']
+    )
+    output = join_tokens(sequence)
+    update.message.reply_text(output)
+
+
 def create_graph_entry(update, context):
     if len(context.user_data['graphs']) >= 3:
         update.message.reply_text(phrases['error']['many-graphs'])
@@ -80,7 +119,7 @@ def current_graph(update, context):
     )
 
 
-def my_graphs(update, context):
+def list_graphs(update, context):
     custom_keyboard = [
         [InlineKeyboardButton(name, callback_data='use.' + name)]
         for name in context.user_data['graphs']
@@ -157,8 +196,12 @@ def run_bot():
 
     dispatcher.add_handler(CommandHandler('start', start_command))
     dispatcher.add_handler(CommandHandler('help', help_command))
+    dispatcher.add_handler(CommandHandler('generate', generate_command))
+    dispatcher.add_handler(
+        MessageHandler(Filters.regex(r'^\+(\d+)$'), generate_command)
+    )
     dispatcher.add_handler(CommandHandler('current_graph', current_graph))
-    dispatcher.add_handler(CommandHandler('my_graphs', my_graphs))
+    dispatcher.add_handler(CommandHandler('list_graphs', list_graphs))
     dispatcher.add_handler(CommandHandler('delete_graph', delete_graph))
     dispatcher.add_handler(CallbackQueryHandler(inline_button_callback))
     dispatcher.add_handler(
