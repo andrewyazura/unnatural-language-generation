@@ -3,7 +3,7 @@ import random
 
 import networkx as nx
 from networkx.readwrite import node_link_data, node_link_graph
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ParseMode
+from telegram import InlineKeyboardMarkup, ParseMode
 from telegram.ext import (
     CallbackQueryHandler,
     CommandHandler,
@@ -20,7 +20,7 @@ from text_generation import (
     join_tokens,
 )
 
-from .helpers import load_yaml
+from .helpers import generate_keyboard_layout, load_yaml
 
 config = load_yaml('telegram_bot/bot_config.yaml')
 phrases = load_yaml('telegram_bot/bot_phrases.yaml')
@@ -57,34 +57,22 @@ def new_graph_command(update, context):
 def new_graph_end(update, context):
     if update.message.text in context.user_data['graphs']:
         update.message.reply_text(phrases['error']['graph-exists'])
+        return GRAPH_NAME_STATE
 
-    else:
-        graph = nx.DiGraph()
-        context.user_data['graphs'][update.message.text] = node_link_data(
-            graph
-        )
-        update.message.reply_text(phrases['success']['saved'])
-
+    graph = nx.DiGraph()
+    context.user_data['graphs'][update.message.text] = node_link_data(graph)
+    context.user_data['current-graph'] = update.message.text
+    update.message.reply_text(phrases['success']['saved'])
     return ConversationHandler.END
 
 
 def graphs_command(update, context):
-    curr = context.user_data['current_graph']
-    custom_keyboard = [
-        [InlineKeyboardButton(name, callback_data='use.' + name)]
-        for name in context.user_data['graphs']
-        if name != curr
-    ]
-
-    if curr:
-        custom_keyboard.insert(
-            0,
-            [
-                InlineKeyboardButton(
-                    curr + phrases['current'], callback_data='use.' + curr
-                )
-            ],
-        )
+    custom_keyboard = generate_keyboard_layout(
+        context.user_data['graphs'].keys(),
+        context.user_data['current_graph'],
+        phrases,
+        'use.',
+    )
 
     if not custom_keyboard:
         update.message.reply_text(phrases['error']['no-graphs'])
@@ -97,12 +85,12 @@ def graphs_command(update, context):
 
 
 def delete_graph_command(update, context):
-    custom_keyboard = [
-        [
-            InlineKeyboardButton(name, callback_data='del.' + name)
-            for name in context.user_data['graphs']
-        ]
-    ]
+    custom_keyboard = generate_keyboard_layout(
+        context.user_data['graphs'].keys(),
+        context.user_data['current_graph'],
+        phrases,
+        'del.',
+    )
 
     if not custom_keyboard:
         update.message.reply_text(phrases['error']['no-graphs'])
@@ -115,7 +103,7 @@ def delete_graph_command(update, context):
 
 
 def inline_button_callback(update, context):
-    query = update.callback_quesry
+    query = update.callback_query
     query.answer()
 
     data = query.data.split('.')
@@ -177,19 +165,22 @@ def generate_command(update, context):
 
 def upload_command(update, context):
     if not context.user_data['graphs']:
-        return
+        update.message.reply_text(phrases['error']['no-graphs'])
+        return ConversationHandler.END
 
     elif not context.user_data['current_graph']:
-        return
+        update.message.reply_text(phrases['error']['no-current-graph'])
+        return ConversationHandler.END
 
+    update.message.reply_text(phrases['ask-input'])
     return UPLOAD_DATA
 
 
-def receive_file(update, context):
+def receive_text(update, context):
     pass
 
 
-def receive_text(update, context):
+def receive_file(update, context):
     pass
 
 
@@ -250,7 +241,7 @@ def run_bot():
                     ),
                 ]
             },
-            fallback=[CommandHandler('cancel', cancel_command)],
+            fallbacks=[CommandHandler('cancel', cancel_command)],
         )
     )
 
