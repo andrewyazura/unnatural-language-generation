@@ -1,5 +1,8 @@
+import json
+import os
+
 import yaml
-from telegram import InlineKeyboardButton
+from networkx.readwrite import node_link_data, node_link_graph
 
 
 def load_yaml(filename):
@@ -8,20 +11,14 @@ def load_yaml(filename):
     return file
 
 
-def generate_keyboard_layout(graphs, current, phrases, prefix):
-    custom_keyboard = [
-        [InlineKeyboardButton(name, callback_data='use.' + name)]
-        for name in graphs
-        if name != current
-    ]
+def get_graph(filename):
+    if os.path.exists(filename):
+        with open(filename, 'r') as f:
+            return node_link_graph(json.load(f))
 
-    if current:
-        custom_keyboard.insert(
-            0,
-            [
-                InlineKeyboardButton(
-                    current + phrases['current'],
-                    callback_data=prefix + current,
-                )
-            ],
-        )
+    return None
+
+
+def set_graph(filename, graph):
+    with open(filename, 'w+') as f:
+        json.dump(node_link_data(graph), f)
