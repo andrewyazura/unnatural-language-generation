@@ -1,13 +1,13 @@
-start: 'start'
-help: 'help'
+start: 'Я - генератор неприродної мови'
+help: 'Щоб згенерувати текст, надішліть повідомлення з текстом "+<довжина тексту>"'
 
 success:
   done: Готово\!
-  saved: Збережено
+  processed: Опрацьовано
 
 error:
   empty-graph: Граф пустий
   value-error: Ви не вказали число
+  wrong-file-format: Файл має бути у форматі .txt
+  length-limit-exceeded: Занадто велике число
   unknown: Щось пішло не так
-  wrong-file: Файл має бути у форматі .txt
-  long-message: Занадто велике число

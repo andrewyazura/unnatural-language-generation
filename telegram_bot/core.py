@@ -51,6 +51,17 @@ def logged(func):
     return wrapped
 
 
+def typing_action(func):
+    @wraps(func)
+    def command_func(update, context, *args, **kwargs):
+        context.bot.send_chat_action(
+            chat_id=update.effective_message.chat_id, action=ChatAction.TYPING
+        )
+        return func(update, context, *args, **kwargs)
+
+    return command_func
+
+
 @logged
 def start_command(update, context):
     update.message.reply_text(phrases['start'])
@@ -63,19 +74,21 @@ def help_command(update, context):
 
 
 @logged
+@typing_action
 def generate_command(update, context):
     try:
         if context.matches:
-            words = int(context.matches[0][1])
+            length = int(context.matches[0][1])
         else:
-            words = int(context.args[0])
+            length = int(context.args[0])
     except (ValueError, IndexError) as exc:
         update.message.reply_text(phrases['error']['value-error'])
         logging.error(exc)
         return
 
-    if words > config['generator']['max-text-length']:
-        update.message.reply_text(phrases['error']['long-message'])
+    if length > config['generator']['max-text-length']:
+        update.message.reply_text(phrases['error']['length-limit-exceeded'])
+        return
 
     graph = get_graph(config['generator']['path'])
 
@@ -83,7 +96,6 @@ def generate_command(update, context):
         update.message.reply_text(phrases['error']['empty-graph'])
         return
 
-    context.bot.send_chat_action(update.message.chat_id, ChatAction.TYPING)
     start = random.choice(
         [
             n.split()
@@ -92,7 +104,7 @@ def generate_command(update, context):
         ]
     )
     sequence = generate_random_sequence(
-        graph, words, start, config['generator']['order']
+        graph, length, start, config['generator']['order']
     )
     output = join_tokens(sequence)
     update.message.reply_text(output, parse_mode=None)
@@ -100,8 +112,8 @@ def generate_command(update, context):
 
 @logged
 @restricted
+@typing_action
 def upload_text(update, context):
-    context.bot.send_chat_action(update.message.chat_id, ChatAction.TYPING)
     set_graph(
         config['generator']['path'],
         convert_tokens_to_graph(
@@ -110,42 +122,44 @@ def upload_text(update, context):
             get_graph(config['generator']['path']),
         ),
     )
-    update.message.reply_text(phrases['success']['done'])
+    update.message.reply_text(phrases['success']['processed'])
 
 
 @logged
 @restricted
+@typing_action
 def upload_file(update, context):
     user_id = update.message.chat_id
     file = update.message.effective_attachment.get_file()
-    context.bot.send_chat_action(user_id, ChatAction.TYPING)
 
-    if os.path.basename(file['file_path']).split('.')[-1] == 'txt':
-        try:
-            path = os.path.join(
-                config['telegram-bot']['temp-path'], uuid.uuid4().hex
+    if os.path.basename(file['file_path']).split('.')[-1] != 'txt':
+        update.message.reply_text(
+            user_id, phrases['error']['wrong-file-format']
+        )
+        return
+
+    try:
+        path = os.path.join(
+            config['telegram-bot']['temp-path'], uuid.uuid4().hex
+        )
+        file.download(path)
+
+        with open(path, 'r') as f:
+            set_graph(
+                config['generator']['path'],
+                convert_tokens_to_graph(
+                    tn.tokenize_words(f.read()),
+                    config['generator']['order'],
+                    get_graph(config['generator']['path']),
+                ),
             )
-            file.download(path)
 
-            with open(path, 'r') as f:
-                set_graph(
-                    config['generator']['path'],
-                    convert_tokens_to_graph(
-                        tn.tokenize_words(f.read()),
-                        config['generator']['order'],
-                        get_graph(config['generator']['path']),
-                    ),
-                )
+        os.remove(path)
+        update.message.reply_text(phrases['success']['processed'])
 
-            os.remove(path)
-            update.message.reply_text(phrases['success']['done'])
-
-        except Exception as exc:
-            logging.error(exc)
-            update.message.reply_text(user_id, phrases['error']['unknown'])
-
-    else:
-        update.message.reply_text(user_id, phrases['error']['wrong-file'])
+    except Exception as exc:
+        logging.error(exc)
+        update.message.reply_text(user_id, phrases['error']['unknown'])
 
 
 def error_handler(update, context):
