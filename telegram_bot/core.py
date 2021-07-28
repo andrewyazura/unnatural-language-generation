@@ -2,10 +2,9 @@ import logging
 import os
 import random
 import uuid
-from functools import wraps
 
 import tokenize_uk as tn
-from telegram import ChatAction, ParseMode
+from telegram import ParseMode
 from telegram.ext import (
     CommandHandler,
     Defaults,
@@ -20,46 +19,20 @@ from text_generation import (
     join_tokens,
 )
 
-from .helpers import get_graph, load_yaml, set_graph
+from .helpers import (
+    get_graph,
+    load_yaml,
+    logged,
+    restricted,
+    set_graph,
+    typing_action,
+)
 
 config = load_yaml('telegram_bot/bot_config.yaml')
 phrases = load_yaml('telegram_bot/bot_phrases.yaml')
 
 logging.basicConfig(**config['logging']['basic-config'])
 logger = logging.getLogger(__name__)
-
-
-def restricted(func):
-    @wraps(func)
-    def wrapped(update, context, *args, **kwargs):
-        user_id = update.effective_user.id
-        if user_id not in config['telegram-bot']['admin-ids']:
-            logging.warn('unauthorized access denied for {}.'.format(user_id))
-            return
-        return func(update, context, *args, **kwargs)
-
-    return wrapped
-
-
-def logged(func):
-    @wraps(func)
-    def wrapped(update, context, *args, **kwargs):
-        user_id = update.effective_user.id
-        logging.info(f'{func.__name__} from user {user_id}')
-        return func(update, context, *args, **kwargs)
-
-    return wrapped
-
-
-def typing_action(func):
-    @wraps(func)
-    def command_func(update, context, *args, **kwargs):
-        context.bot.send_chat_action(
-            chat_id=update.effective_message.chat_id, action=ChatAction.TYPING
-        )
-        return func(update, context, *args, **kwargs)
-
-    return command_func
 
 
 @logged
@@ -82,8 +55,8 @@ def generate_command(update, context):
         else:
             length = int(context.args[0])
     except (ValueError, IndexError) as exc:
-        update.message.reply_text(phrases['error']['value-error'])
         logging.error(exc)
+        update.message.reply_text(phrases['error']['value-error'])
         return
 
     if length > config['generator']['max-text-length']:
@@ -129,13 +102,9 @@ def upload_text(update, context):
 @restricted
 @typing_action
 def upload_file(update, context):
-    user_id = update.message.chat_id
     file = update.message.effective_attachment.get_file()
-
     if os.path.basename(file['file_path']).split('.')[-1] != 'txt':
-        update.message.reply_text(
-            user_id, phrases['error']['wrong-file-format']
-        )
+        update.message.reply_text(phrases['error']['wrong-file-format'])
         return
 
     try:
@@ -159,7 +128,7 @@ def upload_file(update, context):
 
     except Exception as exc:
         logging.error(exc)
-        update.message.reply_text(user_id, phrases['error']['unknown'])
+        update.message.reply_text(phrases['error']['unknown'])
 
 
 def error_handler(update, context):
