@@ -48,6 +48,24 @@ def help_command(update, context):
 
 @logged
 @typing_action
+def graph_command(update, context):
+    graph = get_graph(config['generator']['path'])
+
+    if not graph or not graph.nodes:
+        update.message.reply_text(phrases['error']['empty-graph'])
+        return
+
+    update.message.reply_text(
+        phrases['about-graph'].format(
+            graph.number_of_nodes(),
+            graph.number_of_edges(),
+            int(graph.size('weight')),
+        ),
+    )
+
+
+@logged
+@typing_action
 def generate_command(update, context):
     try:
         if context.matches:
@@ -153,6 +171,7 @@ def run_bot():
 
     dispatcher.add_handler(CommandHandler('start', start_command))
     dispatcher.add_handler(CommandHandler('help', help_command))
+    dispatcher.add_handler(CommandHandler('graph', graph_command))
     dispatcher.add_handler(
         CommandHandler('generate', generate_command, run_async=True)
     )
