@@ -10,3 +10,4 @@ error:
   value-error: Ви не вказали число
   unknown: Щось пішло не так
   wrong-file: Файл має бути у форматі .txt
+  long-message: Занадто велике число

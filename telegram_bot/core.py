@@ -4,6 +4,7 @@ import random
 import uuid
 from functools import wraps
 
+import tokenize_uk as tn
 from telegram import ChatAction, ParseMode
 from telegram.ext import (
     CommandHandler,
@@ -60,12 +61,16 @@ def generate_command(update, context):
         logging.error(exc)
         return
 
+    if words > config['generator']['max-text-length']:
+        update.message.reply_text(phrases['error']['long-message'])
+
     graph = get_graph(config['generator']['path'])
 
     if not graph or not graph.nodes:
         update.message.reply_text(phrases['error']['empty-graph'])
         return
 
+    context.bot.send_chat_action(update.message.chat_id, ChatAction.TYPING)
     start = random.choice(
         [
             n.split()
@@ -77,12 +82,21 @@ def generate_command(update, context):
         graph, words, start, config['generator']['order']
     )
     output = join_tokens(sequence)
-    update.message.reply_text(output)
+    update.message.reply_text(output, parse_mode=None)
 
 
 @restricted
 def upload_text(update, context):
-    pass
+    context.bot.send_chat_action(update.message.chat_id, ChatAction.TYPING)
+    set_graph(
+        config['generator']['path'],
+        convert_tokens_to_graph(
+            tn.tokenize_words(update.message.text),
+            config['generator']['order'],
+            get_graph(config['generator']['path']),
+        ),
+    )
+    update.message.reply_text(phrases['success']['done'])
 
 
 @restricted
@@ -94,7 +108,7 @@ def upload_file(update, context):
     if os.path.basename(file['file_path']).split('.')[-1] == 'txt':
         try:
             path = os.path.join(
-                config['telegram-bot']['temp-path'], uuid.uuid4()
+                config['telegram-bot']['temp-path'], uuid.uuid4().hex
             )
             file.download(path)
 
@@ -102,21 +116,21 @@ def upload_file(update, context):
                 set_graph(
                     config['generator']['path'],
                     convert_tokens_to_graph(
-                        f.read(),
+                        tn.tokenize_words(f.read()),
                         config['generator']['order'],
                         get_graph(config['generator']['path']),
                     ),
                 )
 
             os.remove(path)
-            context.bot.send_message(user_id, phrases['success']['done'])
+            update.message.reply_text(phrases['success']['done'])
 
         except Exception as exc:
             logging.error(exc)
-            context.bot.send_message(user_id, phrases['error']['unknown'])
+            update.message.reply_text(user_id, phrases['error']['unknown'])
 
     else:
-        context.bot.send_message(user_id, phrases['error']['wrong-file'])
+        update.message.reply_text(user_id, phrases['error']['wrong-file'])
 
 
 def error_handler(update, context):
