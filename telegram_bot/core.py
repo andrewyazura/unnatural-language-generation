@@ -41,15 +41,28 @@ def restricted(func):
     return wrapped
 
 
+def logged(func):
+    @wraps(func)
+    def wrapped(update, context, *args, **kwargs):
+        user_id = update.effective_user.id
+        logging.info(f'{func.__name__} from user {user_id}')
+        return func(update, context, *args, **kwargs)
+
+    return wrapped
+
+
+@logged
 def start_command(update, context):
     update.message.reply_text(phrases['start'])
     update.message.reply_text(phrases['help'])
 
 
+@logged
 def help_command(update, context):
     update.message.reply_text(phrases['help'])
 
 
+@logged
 def generate_command(update, context):
     try:
         if context.matches:
@@ -85,6 +98,7 @@ def generate_command(update, context):
     update.message.reply_text(output, parse_mode=None)
 
 
+@logged
 @restricted
 def upload_text(update, context):
     context.bot.send_chat_action(update.message.chat_id, ChatAction.TYPING)
@@ -99,6 +113,7 @@ def upload_text(update, context):
     update.message.reply_text(phrases['success']['done'])
 
 
+@logged
 @restricted
 def upload_file(update, context):
     user_id = update.message.chat_id
