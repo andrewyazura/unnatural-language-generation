@@ -1,215 +1,164 @@
 import logging
 import os
+import random
+import uuid
 
-import numpy as np
-import requests
-import yaml
-from telegram import (
-    ChatAction,
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-    ParseMode,
-)
+import tokenize_uk as tn
+from telegram import ParseMode
 from telegram.ext import (
-    CallbackQueryHandler,
     CommandHandler,
     Defaults,
     Filters,
     MessageHandler,
+    PicklePersistence,
     Updater,
 )
 from text_generation import (
-    random_sentence,
-    tokens_to_graph,
-    text_to_tokens,
+    convert_tokens_to_graph,
+    generate_random_sequence,
+    join_tokens,
 )
 
 from .helpers import (
-    delete_all_graphs,
-    delete_user_graph,
-    get_all_graphs,
-    get_user_graph,
+    get_graph,
+    load_yaml,
+    logged,
     restricted,
-    update_user_graph,
+    set_graph,
+    typing_action,
 )
 
-with open('telegram_bot/bot_config.yml', 'r') as stream:
-    config = yaml.safe_load(stream)
+config = load_yaml('telegram_bot/bot_config.yaml')
+phrases = load_yaml('telegram_bot/bot_phrases.yaml')
 
-with open('telegram_bot/bot_phrases.yml', 'r') as stream:
-    phrases = yaml.safe_load(stream)
-
-logging.basicConfig(**config['logging'])
+logging.basicConfig(**config['logging']['basic-config'])
 logger = logging.getLogger(__name__)
 
 
+@logged
 def start_command(update, context):
     update.message.reply_text(phrases['start'])
     update.message.reply_text(phrases['help'])
 
 
+@logged
 def help_command(update, context):
     update.message.reply_text(phrases['help'])
 
 
-def stats_command(update, context):
-    user_id = update.message.chat_id
-    graph = get_user_graph(user_id)
+@logged
+@typing_action
+def graph_command(update, context):
+    graph = get_graph(config['generator']['path'])
 
-    if graph:
-        update.message.reply_text(
-            phrases['stats'].format(
-                graph.number_of_nodes(),
-                graph.number_of_edges(),
-                graph.size('weight'),
-            )
-        )
+    if not graph or not graph.nodes:
+        update.message.reply_text(phrases['error']['empty-graph'])
+        return
 
-    else:
-        update.message.reply_text(phrases['no-graph'])
-
-
-@restricted
-def stats_all_command(update, context):
-    for filename, graph in get_all_graphs():
-        update.message.reply_text(
-            f'*Користувач:* {filename}\n'
-            + phrases['stats'].format(
-                graph.number_of_nodes(),
-                graph.number_of_edges(),
-                graph.size('weight'),
-            )
-        )
-
-
-def clear_command(update, context):
-    try:
-        delete_user_graph(update.message.chat_id)
-        update.message.reply_text(phrases['done'])
-
-    except:
-        update.message.reply_text(phrases['no-graph'])
-
-
-@restricted
-def clear_user_command(update, context):
-    try:
-        user_id = int(context.args[0])
-        delete_user_graph(user_id)
-        update.message.reply_text(phrases['done'])
-
-    except:
-        update.message.reply_text(phrases['clear-user-help'])
-
-
-@restricted
-def clear_all_command(update, context):
-    delete_all_graphs()
-    update.message.reply_text(phrases['done'])
-
-
-def generate_command(update, context):
-    user_id = update.message.chat_id
-    context.bot.send_chat_action(user_id, ChatAction.TYPING)
-
-    try:
-        length = int(context.args[0])
-        graph = get_user_graph(user_id)
-        word = np.random.choice(graph.nodes)
-
-        context.bot.send_message(
-            user_id,
-            random_sentence(graph, word, length),
-        )
-
-    except (IndexError, ValueError):
-        update.message.reply_text(
-            phrases['generate-help'],
-        )
-
-    except:
-        update.message.reply_text(phrases['no-graph'])
-
-
-def presets_command(update, context):
-    keyboard = [
-        [InlineKeyboardButton(title, callback_data=title)]
-        for title in config['presets']
-    ]
-
-    reply_markup = InlineKeyboardMarkup(keyboard)
     update.message.reply_text(
-        phrases['choose-preset'], reply_markup=reply_markup
-    )
-
-
-def preset_callback(update, context):
-    query = update.callback_query
-    user_id = query.from_user.id
-
-    query.answer()
-    query.edit_message_text(text=phrases['chosen-preset'].format(query.data))
-    context.bot.send_chat_action(user_id, ChatAction.TYPING)
-
-    try:
-        text = requests.get(config['presets'][query.data]).text
-        update_user_graph(
-            user_id,
-            tokens_to_graph(
-                text_to_tokens(text),
-                get_user_graph(user_id),
-            ),
-        )
-        context.bot.send_message(user_id, phrases['processed'])
-
-    except Exception as exc:
-        logging.error(exc)
-        context.bot.send_message(user_id, phrases['error'])
-
-
-def handle_text(update, context):
-    user_id = update.message.chat_id
-    context.bot.send_chat_action(user_id, ChatAction.TYPING)
-
-    update_user_graph(
-        user_id,
-        tokens_to_graph(
-            text_to_tokens(update.message.text),
-            get_user_graph(user_id),
+        phrases['about-graph'].format(
+            graph.number_of_nodes(),
+            graph.number_of_edges(),
+            int(graph.size('weight')),
         ),
     )
 
-    context.bot.send_message(user_id, phrases['processed'])
+
+@logged
+@typing_action
+def generate_command(update, context):
+    try:
+        if context.matches:
+            length = int(context.matches[0][1])
+        else:
+            length = int(context.args[0])
+    except (ValueError, IndexError) as exc:
+        logging.error(exc)
+        update.message.reply_text(phrases['error']['value-error'])
+        return
+
+    if length > config['generator']['max-text-length']:
+        update.message.reply_text(phrases['error']['length-limit-exceeded'])
+        return
+
+    graph = get_graph(config['generator']['path'])
+
+    if not graph or not graph.nodes:
+        update.message.reply_text(phrases['error']['empty-graph'])
+        return
+
+    start = random.choice(
+        [
+            n.split()
+            for n in graph.nodes
+            if graph[n] and len(n.split()) == config['generator']['order']
+        ]
+    )
+    sequence = generate_random_sequence(
+        graph, length, start, config['generator']['order']
+    )
+    output = join_tokens(sequence)
+    update.message.reply_text(output, parse_mode=None)
 
 
-def handle_file(update, context):
-    user_id = update.message.chat_id
+@logged
+@restricted
+@typing_action
+def upload_text(update, context):
+    set_graph(
+        config['generator']['path'],
+        convert_tokens_to_graph(
+            tn.tokenize_words(update.message.text),
+            config['generator']['order'],
+            get_graph(config['generator']['path']),
+        ),
+    )
+    update.message.reply_text(phrases['success']['processed'])
+
+
+@logged
+@restricted
+@typing_action
+def upload_file(update, context):
     file = update.message.effective_attachment.get_file()
-    context.bot.send_chat_action(user_id, ChatAction.TYPING)
+    if os.path.basename(file['file_path']).split('.')[-1] != 'txt':
+        update.message.reply_text(phrases['error']['wrong-file-format'])
+        return
 
-    if os.path.basename(file['file_path']).split('.')[-1] == 'txt':
-        try:
-            path = config['user-texts-path'].format(user_id)
-            file.download(path)
+    try:
+        path = os.path.join(
+            config['telegram-bot']['temp-path'], uuid.uuid4().hex
+        )
+        file.download(path)
 
-            with open(path, 'r') as f:
-                update_user_graph(
-                    user_id,
-                    tokens_to_graph(
-                        text_to_tokens(f.read()),
-                        get_user_graph(user_id),
-                    ),
-                )
+        with open(path, 'r') as f:
+            set_graph(
+                config['generator']['path'],
+                convert_tokens_to_graph(
+                    tn.tokenize_words(f.read()),
+                    config['generator']['order'],
+                    get_graph(config['generator']['path']),
+                ),
+            )
 
-            os.remove(path)
-            context.bot.send_message(user_id, phrases['processed'])
+        os.remove(path)
+        update.message.reply_text(phrases['success']['processed'])
 
-        except Exception as exc:
-            logging.error(exc)
-            context.bot.send_message(user_id, phrases['error'])
+    except Exception as exc:
+        logging.error(exc)
+        update.message.reply_text(phrases['error']['unknown'])
 
-    else:
-        context.bot.send_message(user_id, phrases['wrong-file'])
+
+@logged
+@restricted
+def clean_command(update, context):
+    try:
+        os.remove(config['generator']['path'])
+        update.message.reply_text(phrases['success']['done'])
+
+    except Exception as exc:
+        logging.error(exc)
+        update.message.reply_text(phrases['error']['unknown'])
 
 
 def error_handler(update, context):
@@ -218,40 +167,39 @@ def error_handler(update, context):
 
 def run_bot():
     defaults = Defaults(
-        parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True
+        parse_mode=ParseMode.MARKDOWN_V2,
+        disable_web_page_preview=True,
     )
-    updater = Updater(**config['telegram-bot'], defaults=defaults)
+    persistence = PicklePersistence(
+        **config['telegram-bot']['persistence'],
+    )
+    updater = Updater(
+        **config['telegram-bot']['updater'],
+        defaults=defaults,
+        persistence=persistence,
+        use_context=True,
+    )
     dispatcher = updater.dispatcher
 
     dispatcher.add_handler(CommandHandler('start', start_command))
     dispatcher.add_handler(CommandHandler('help', help_command))
-
-    dispatcher.add_handler(
-        CommandHandler('stats', stats_command, run_async=True)
-    )
-    dispatcher.add_handler(
-        CommandHandler('stats_all', stats_all_command, run_async=True)
-    )
-
-    dispatcher.add_handler(CommandHandler('clear', clear_command))
-    dispatcher.add_handler(CommandHandler('clear_user', clear_user_command))
-    dispatcher.add_handler(CommandHandler('clear_all', clear_all_command))
-
+    dispatcher.add_handler(CommandHandler('graph', graph_command))
+    dispatcher.add_handler(CommandHandler('clean', clean_command))
     dispatcher.add_handler(
         CommandHandler('generate', generate_command, run_async=True)
     )
-    dispatcher.add_handler(CommandHandler('presets', presets_command))
-    dispatcher.add_handler(
-        CallbackQueryHandler(preset_callback, run_async=True)
-    )
-
     dispatcher.add_handler(
         MessageHandler(
-            Filters.text & ~Filters.command, handle_text, run_async=True
+            Filters.regex(r'^\+(\d+)$'), generate_command, run_async=True
         )
     )
     dispatcher.add_handler(
-        MessageHandler(Filters.document, handle_file, run_async=True)
+        MessageHandler(
+            Filters.text & ~Filters.command, upload_text, run_async=True
+        )
+    )
+    dispatcher.add_handler(
+        MessageHandler(Filters.document, upload_file, run_async=True)
     )
 
     dispatcher.add_error_handler(error_handler)
