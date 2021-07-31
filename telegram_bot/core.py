@@ -60,6 +60,7 @@ def graph_command(update, context):
             graph.number_of_nodes(),
             graph.number_of_edges(),
             int(graph.size('weight')),
+            config['generator']['order'],
         ),
     )
 
@@ -108,7 +109,7 @@ def upload_text(update, context):
     set_graph(
         config['generator']['path'],
         convert_tokens_to_graph(
-            tn.tokenize_words(update.message.text),
+            tn.tokenize_words(update.message.text.lower()),
             config['generator']['order'],
             get_graph(config['generator']['path']),
         ),
@@ -135,7 +136,7 @@ def upload_file(update, context):
             set_graph(
                 config['generator']['path'],
                 convert_tokens_to_graph(
-                    tn.tokenize_words(f.read()),
+                    tn.tokenize_words(f.read().lower()),
                     config['generator']['order'],
                     get_graph(config['generator']['path']),
                 ),
