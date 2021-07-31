@@ -184,8 +184,10 @@ def run_bot():
 
     dispatcher.add_handler(CommandHandler('start', start_command))
     dispatcher.add_handler(CommandHandler('help', help_command))
-    dispatcher.add_handler(CommandHandler('graph', graph_command))
     dispatcher.add_handler(CommandHandler('clean', clean_command))
+    dispatcher.add_handler(
+        CommandHandler('graph', graph_command, run_async=True)
+    )
     dispatcher.add_handler(
         CommandHandler('generate', generate_command, run_async=True)
     )
