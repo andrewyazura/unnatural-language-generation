@@ -1,17 +1,23 @@
-import numpy as np
+import random
+
+import tokenize_uk as tn
 
 from text_generation import (
-    random_sentence,
-    tokens_to_graph,
-    text_to_tokens,
+    join_tokens,
+    generate_random_sequence,
+    convert_tokens_to_graph,
 )
 
 with open('tmp/text.txt', 'r') as f:
-    t = f.read()
+    t = f.read().lower()
 
-tokens = text_to_tokens(t)
-graph = tokens_to_graph(tokens)
-word = np.random.choice(graph.nodes)
+order = 3
 
-generated_sentence = random_sentence(graph, word, 40)
-print(generated_sentence)
+tokens = tn.tokenize_words(t)
+graph = convert_tokens_to_graph(tokens, order)
+start = random.choice(
+    [n.split() for n in graph.nodes if graph[n] and len(n.split()) == order]
+)
+sequence = generate_random_sequence(graph, 200, start, order)
+output = join_tokens(sequence)
+print(output)

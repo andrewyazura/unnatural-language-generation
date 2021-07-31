@@ -1,57 +1,53 @@
-import string
+import random
 
 import networkx as nx
-import numpy as np
-import tokenize_uk as tn
 
 
-def text_to_tokens(text):
-    return [
-        token
-        for paragraph in tn.tokenize_text(text.lower())
-        for sentence in paragraph
-        for token in sentence
-    ]
+def join_tokens(tokens):
+    result = tokens[0]
+
+    for token in tokens[1:]:
+        if token not in '!),.:;?]}':
+            result += ' '
+        result += token
+
+    return result
 
 
-def tokens_to_graph(tokens, graph=None):
+def update_graph(graph, key, value):
+    if graph.has_edge(key, value):
+        graph[key][value]['weight'] += 1
+    else:
+        graph.add_edge(key, value, weight=1)
+
+
+def convert_tokens_to_graph(tokens, order=1, graph=None):
     if graph is None:
         graph = nx.DiGraph()
 
     for index, token in enumerate(tokens):
-        if index + 1 == len(tokens):
-            continue
-
-        weight = graph.get_edge_data(token, tokens[index + 1], default={}).get(
-            'weight', 0
-        )
-        graph.add_edge(token, tokens[index + 1], weight=weight + 1)
+        if index >= order:
+            pre = join_tokens(tokens[index - order : index])
+            update_graph(graph, pre, token)
 
     return graph
 
 
-def random_sentence(graph, start_token, length):
-    sentence = start_token.capitalize()
-    token = start_token
+def generate_random_sequence(graph, length, start_tokens, order=1):
+    order = min(len(start_tokens), order)
+    sequence = start_tokens
 
-    for _ in range(length - 1):
-        adj = graph[token]
-        if not adj:
+    for index in range(order, length - order):
+        pre = join_tokens(sequence[index - order : index])
+        next_tokens = graph[pre]
+
+        if not next_tokens:
             token = '.'
-            sentence += token
+            sequence += token
             continue
 
-        weights = [adj[w]['weight'] for w in adj]
-        total_weights = sum(weights)
-        weights = [w / total_weights for w in weights]
-        token = np.random.choice(list(adj), 1, p=weights)[0]
+        weights = [next_tokens[t]['weight'] for t in next_tokens]
+        token = random.choices(list(next_tokens), weights)[0]
+        sequence.append(token)
 
-        if sentence[-1] == '.':
-            token = token.capitalize()
-
-        if not all(i in string.punctuation for i in token):
-            sentence += ' '
-
-        sentence += token
-
-    return sentence
+    return sequence
