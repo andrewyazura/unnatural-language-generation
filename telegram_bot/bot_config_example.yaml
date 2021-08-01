@@ -1,22 +1,19 @@
 generator:
-  order: int
   max-text-length: int
-  path: path/file.json
+  graph:
+    order: int
+    path: path/file.json
 
 logging:
   basic-config:
     filename: path/file.log
-    level: INFO
+    level: str
 
 telegram-bot:
   admin-ids:
     - int
 
   temp-path: path/dir
-
-  persistence:
-    filename: path/file_prefix
-    single_file: bool
 
   updater:
     token: str
