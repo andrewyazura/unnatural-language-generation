@@ -1,28 +1,20 @@
-import glob
-import json
 import random
 
 import tokenize_uk as tn
-from networkx.readwrite import node_link_data
 
 from text_generation import (
-    convert_tokens_to_graph,
-    generate_random_sequence,
     join_tokens,
+    generate_random_sequence,
+    convert_tokens_to_graph,
 )
 
-graph = None
-order = 2
+with open('tmp/text.txt', 'r') as f:
+    t = f.read().lower()
 
-for path in glob.glob('tmp/texts/*'):
-    with open(path, 'r') as f:
-        t = f.read().lower()
-        tokens = tn.tokenize_words(t)
-        graph = convert_tokens_to_graph(tokens, order, graph)
+order = 3
 
-with open('tmp/generator.json', 'w+') as f:
-    json.dump(node_link_data(graph), f)
-
+tokens = tn.tokenize_words(t)
+graph = convert_tokens_to_graph(tokens, order)
 start = random.choice(
     [n.split() for n in graph.nodes if graph[n] and len(n.split()) == order]
 )
