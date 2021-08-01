@@ -8,9 +8,10 @@ help: |-
   Читайте більше на [GitHub](https://github.com/andrewyazura/unnatural-language-generation#readme)
 
 about-graph: |-
-  *Кількість відомих токенів:* {}
-  *Кількість зв'язків:* {}
-  *Загальна вага графу:* {}
+  *Кількість відомих токенів:* {nodes}
+  *Кількість зв'язків:* {edges}
+  *Загальна вага графу:* {weight}
+  *Порядок графу*: {order}
 
 success:
   done: ✔️ Готово\!
