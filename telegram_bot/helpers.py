@@ -1,33 +1,17 @@
-import json
 import logging
-import os
 from functools import wraps
 
 import yaml
-from networkx.readwrite import node_link_data, node_link_graph
 from telegram import ChatAction
 
 
 def load_yaml(filename):
-    with open(filename, 'r') as stream:
+    with open(filename, 'r', encoding='utf-8') as stream:
         file = yaml.safe_load(stream)
     return file
 
 
 config = load_yaml('telegram_bot/bot_config.yaml')
-
-
-def get_graph(filename):
-    if os.path.exists(filename):
-        with open(filename, 'r') as f:
-            return node_link_graph(json.load(f))
-
-    return None
-
-
-def set_graph(filename, graph):
-    with open(filename, 'w+') as f:
-        json.dump(node_link_data(graph), f)
 
 
 def restricted(func):
