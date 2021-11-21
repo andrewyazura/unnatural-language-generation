@@ -1,88 +1,26 @@
-# Unnatural language generation / Генератор неприродної мови
+# Unnatural language generation
 
-![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/andrewyazura/unnatural-language-generation?include_prereleases&label=release&labelColor=181717&logo=github)
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/andrewyazura/unnatural-language-generation/lint?label=linter&labelColor=181717&logo=github)
-[![Telegram Bot Link](https://img.shields.io/static/v1?label=telegram&message=bot&color=26a5e4&labelColor=181717&logo=telegram)](https://t.me/unnatural_language_bot)
+CLI tool to generate random gibberish texts based on markov chains.
 
-- [Unnatural language generation / Генератор неприродної мови](#unnatural-language-generation--генератор-неприродної-мови)
-  - [Що це?](#що-це)
-  - [Як спробувати?](#як-спробувати)
-  - [Як це працює?](#як-це-працює)
-    - [Токенізація](#токенізація)
-    - [Перетворення у граф](#перетворення-у-граф)
-      - [Порядок](#порядок)
-  - [Credits](#credits)
+## Usage
 
-## Що це?
+### Process text
 
-Це - примітивний генератор неприродної мови.
-Він будує граф на основі текстів, які отримує, запам'ятовуючи зв'язки між словами.
-Після цього генератор може будувати рандомні тексти, знаючи частовживані послідовності слів.
+`ulg process --json <graph dump> --input <text file> --output <output file> --order <order>`
 
-## Як спробувати?
+* `graph dump` - json file of your graph
+* `text file` - text file you want to process
+* `output file` - json file where new graph will be stored
+* `order` - markov chain order
 
-Telegram бот [@unnatural_language_bot](https://t.me/unnatural_language_bot).
-Він має натренований генератор, яким можна користуватися.
+### Generate text
 
-## Як це працює?
+`ulg generate --json <graph dump> --order <order> --words <words>`
 
-Під час опрацювання текст проходить *токенізацію* та *перетворення у граф*.
-Результатом опрацювання є граф, що має зв'язки між токенами тексту.
-
-Для генерації нових текстів обирається рандомний токен (або послідовність токенів, довжина якого дорівнює *порядку*).
-Кожне наступне слово обирається використовуючи вагу зв'язків, що йдуть від обраного токена.
-
-### Токенізація
-
-Токенізація - процес розділення тексту на окремі *токени* - слова та пунктуацію.
-Пунктуація розглядається окремо, на тому ж рівні, що і слова.
-
-Для токенізації використовується бібліотека [`tokenize_uk`](https://github.com/lang-uk/tokenize-uk).
-
-### Перетворення у граф
-
-Генератор проходить весь текст і записує у граф зв'язки між сусідніми токенами.
-Таким чином, між токенами, що часто зустрічаються разом вага зв'язку більша.
-Генератор нової версії має *порядок* (order).
-Цей параметр дозволяє робити текст трішки ближчим до справжнього.
-
-#### Порядок
-
-Для того, щоб у тексті було менше помилок, можна записувати зв'язки між послідовністю токенів і токеном, що йде після неї.
-Наприклад, якщо порядок дорівнюватиме 3, зв'язок буде побудовний між трьома словами і наступним після них.
-
-Якщо взяти такий текст:
-
-```text
-Еней був парубок моторний
-І хлопець хоть куди козак,
-Удавсь на всеє зле проворний,
-Завзятійший од всіх бурлак.
-```
-
-При `порядок = 3` у графі будуть побудовані такі зв'язки:
-
-```text
-"еней був парубок" -> "моторний"
-"був парубок моторний" -> "і"
-"парубок моторний і" -> "хлопець"
-"моторний і хлопець" -> "хоть"
-"і хлопець хоть" -> "куди"
-...
-"завзятіший од всіх" -> "бурлак"
-"од всіх бурлак" -> "."
-```
-
-При `порядок = 5` у графі будуть побудовані такі зв'язки:
-
-```text
-"еней був парубок моторний і" -> "хлопець"
-"був парубок моторний і хлопець" -> "хоть"
-...
-"проворний , завзятіший од всіх" -> "бурлак"
-", завзятіший од всіх бурлак" -> "."
-```
+* `graph dump` - json file of your graph
+* `order` - markov chain order
+* `words` - number of words to generate
 
 ## Credits
 
-Дякую за ідею [@danbst](https://github.com/danbst)
+Thanks to [@danbst](https://github.com/danbst) for the idea
