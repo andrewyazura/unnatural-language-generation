@@ -1,4 +1,3 @@
-from text_generator.scripts.cli import cli
-from text_generator.generator import Generator
+from text_generator.generator import EmptyGeneratorException, Generator
 
-__all__ = ["cli", "Generator"]
+__all__ = ["EmptyGeneratorException", "Generator"]

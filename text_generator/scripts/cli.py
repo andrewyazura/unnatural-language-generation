@@ -40,7 +40,7 @@ def generate(json_path, words, order):
 )
 @click.option("-o", "--order", "order", default=1, type=int, show_default=True)
 def process(json_path, input_path, output_path, order):
-    """Generate random sequence from graph"""
+    """Process text and save it to graph"""
     if json_path:
         click.echo(f"Loading generator from '{json_path}'...")
         generator = Generator.load_from_json(json_path, order=order)
@@ -66,7 +66,7 @@ def process(json_path, input_path, output_path, order):
 )
 @click.option("-o", "--order", "order", default=1, type=int, show_default=True)
 def info(json_path, order):
-    """Generate random sequence from graph"""
+    """Get info about graph"""
     click.echo(f"Loading generator from '{json_path}'...")
     generator = Generator.load_from_json(json_path, order=order)
     click.echo(generator.graph_info())
