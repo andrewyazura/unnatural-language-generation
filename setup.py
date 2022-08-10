@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="unnatural-language-generation",
-    version="3.0.0",
+    version="4.0.0",
     packages=find_packages(),
     install_requires=["click", "networkx", "tokenize-uk"],
     include_package_data=True,
