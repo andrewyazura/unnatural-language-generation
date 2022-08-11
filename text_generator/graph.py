@@ -1,0 +1,21 @@
+import networkx as nx
+
+
+def graph_from_iterable(
+    iterable: str, order: int = 3, graph: nx.DiGraph = None
+) -> nx.DiGraph:
+    graph = graph or nx.DiGraph()
+
+    backlog = []
+
+    for token in iterable:
+        if len(backlog) == order:
+            edge = (" ".join(backlog), token)
+            backlog = []
+
+            count = graph.get_edge_data(*edge, {}).get("count", 0)
+            graph.add_edge(*edge, count=count + 1)
+
+        backlog.append(token)
+
+    return graph
