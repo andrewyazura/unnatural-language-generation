@@ -1,10 +1,11 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 
 setup(
     name="unnatural-language-generation",
     version="4.0.0",
-    packages=find_packages(),
+    author="Andrew Yatsura",
+    url="https://github.com/andrewyazura/unnatural-language-generation",
+    packages=["text_generator"],
     install_requires=["click", "networkx", "tokenize-uk"],
-    include_package_data=True,
-    entry_points={"console_scripts": ["ulg = text_generator.scripts.cli:cli"]},
+    entry_points={"console_scripts": ["textgen = cli:cli"]},
 )
