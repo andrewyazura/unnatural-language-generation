@@ -2,11 +2,9 @@ import random
 
 import networkx as nx
 
-from text_generator.helpers import get_random_node
 
-
-def generate_sequence(graph: nx.DiGraph, words: int, order: int) -> str:
-    start = get_random_node(graph, order)
+def generate_sequence(graph: nx.DiGraph, words: int, order: int) -> list[str]:
+    start = random.choice([n for n in graph.nodes if len(n.split()) == order])
     sequence = [*start.split()]
 
     for i in range(order, words):

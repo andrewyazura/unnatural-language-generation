@@ -2,6 +2,7 @@ import click
 
 from text_generator.generate import generate_sequence
 from text_generator.graph import graph_from_iterable
+from text_generator.helpers import join_punctuation
 from text_generator.io import dump_graph, load_graph
 from text_generator.tokenize import tokenize_text
 
@@ -115,11 +116,8 @@ def generate(graph_path, words, order):
     click.echo("generating text...")
     sequence = generate_sequence(graph, words, order)
 
-    text = " ".join(sequence)
+    text = join_punctuation(sequence)
     click.echo(text)
-
-    if len(sequence) == words:
-        color = "green"
 
     color = "green" if len(sequence) == words else "yellow"
     click.secho(f"{len(sequence)} words generated", fg=color)

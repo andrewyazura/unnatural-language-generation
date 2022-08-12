@@ -1,23 +1,10 @@
-import random
-from string import punctuation
+import string
+from typing import Iterable
 
-import networkx as nx
-
-
-def join_punctuation(seq):
-    characters = set(punctuation)
-    seq = iter(seq)
-    current = next(seq)
-
-    for nxt in seq:
-        if nxt in characters:
-            current += nxt
-        else:
-            yield current
-            current = nxt
-
-    yield current
+punctuation = set(string.punctuation)
 
 
-def get_random_node(graph: nx.DiGraph, order: int) -> str:
-    return random.choice([n for n in graph.nodes if len(n.split()) == order])
+def join_punctuation(iterable: Iterable[str]) -> str:
+    return "".join(
+        word if set(word) <= punctuation else " " + word for word in iterable
+    ).lstrip()

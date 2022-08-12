@@ -1,8 +1,10 @@
+from typing import Iterable
+
 import networkx as nx
 
 
 def graph_from_iterable(
-    iterable: str, order: int, graph: nx.DiGraph = None
+    iterable: Iterable[str], order: int, graph: nx.DiGraph = None
 ) -> nx.DiGraph:
     graph = graph or nx.DiGraph()
 
