@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "unnatural-language-generation"
+version = "0.1.0"
+description = ""
+authors = ["Andrew Yatsura <andrewyazura203@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "unnatural_language_generation"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+click = "^8.1.7"
+networkx = "^3.1"
+tokenize-uk = "^0.2.0"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.7.0"
+ruff = "^0.0.285"
+mypy = "^1.5.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
