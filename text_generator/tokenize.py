@@ -1,5 +1,6 @@
-import tokenize_uk
 from typing import Generator
+
+import tokenize_uk
 
 
 def tokenize_text(text: str) -> Generator[str, None, None]:

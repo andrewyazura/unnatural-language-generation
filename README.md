@@ -35,7 +35,7 @@ Usage: textgen parse [OPTIONS]
 Options:
   -in, --input FILE    text files to parse (can be repeated)  [required]
   -out, --output FILE  path to file to export graph into  [required]
-  -g, --graph FILE     path to an exsiting graph file
+  -g, --graph FILE     path to an existing graph file
   -o, --order INTEGER  order of graph (read README to know more)  [default: 1]
   --help               Show this message and exit.
 ```

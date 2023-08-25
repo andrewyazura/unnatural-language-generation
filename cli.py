@@ -10,7 +10,7 @@ from text_generator.tokenize import tokenize_text
 @click.group()
 def cli():
     """
-    This project provides a CLi and a Python package for generating unnatural language.
+    This project provides a CLI and a Python package for generating unnatural language.
     It uses Markov chains to make directed graph of words and then generates sentences.
     Each edge contains `count` of how many times two nodes it connects were found in
     text. During text generation `count` is used to randomly choose next word.
@@ -41,7 +41,7 @@ def cli():
     "--graph",
     "graph_path",
     type=click.Path(exists=True, dir_okay=False),
-    help="path to an exsiting graph file",
+    help="path to an existing graph file",
 )
 @click.option(
     "-o",
